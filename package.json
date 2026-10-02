@@ -1,0 +1,13 @@
+{
+  "name": "wroogle-walktober-2026",
+  "version": "1.0.0",
+  "description": "The Wroogle Company — Walktober 2026 Global Trail Expedition Tracker (Wrocław Google Office)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "totalSteps": 87422,
+  "updatedAt": "2026-10-02T11:12:27.770Z",
+  "updatedBy": "mokshazna",
+  "teamMessage": "Welcome to Walktober 2026, Wrooglers! Lace up in Wrocław and let's conquer all 10 world trails together!",
+  "members": [
+    "Moksh Atukuri",
+    "Aleksandra (Sasha) Liubimova",
+    "Hürü Ismayilzada",
+    "Philipp Kuhr",
+    "Matthias Ziener",
+    "Dawid Myśliwiec",
+    "Natascha Schoepl",
+    "Klaudia Wozniak",
+    "Joanna Nowek",
+    "Przemysław Józefowicz",
+    "Paweł Glica",
+    "Ewa Owczarewicz",
+    "Mohamed Abdalhamid",
+    "Iwona Chmielik"
+  ],
+  "history": [
+    {
+      "id": "evt-1790928840775-3uc3",
+      "timestamp": "2026-10-02T08:14:00.709Z",
+      "mode": "add",
+      "delta": 87422,
+      "previousSteps": 0,
+      "newSteps": 87422,
+      "note": "Added +87,422 team steps",
+      "actor": "mokshazna"
+    }
+  ]
+}

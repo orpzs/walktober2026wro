@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Wroogle Company — Walktober 2026 Global Trail Expedition</title>
+  <meta name="description" content="Official Walktober 2026 step tracker and interactive world trail expedition logbook for The Wroogle Company at Google Wrocław." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,600&family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <!-- Subtle SVG Topographic Contour Watermark -->
+  <div class="topo-watermark" aria-hidden="true"></div>
+
+  <!-- Top Expedition Navigation Bar -->
+  <header class="site-header" id="site-header">
+    <div class="container header-inner">
+      <a href="#top" class="brand-identity" id="brand-home-link">
+        <div class="brand-crest-wrap">
+          <img src="/images/wroogle-crest.jpg" alt="The Wroogle Company Wrocław Dwarf Hiker Emblem" class="brand-crest-img" />
+        </div>
+        <div class="brand-titles">
+          <span class="brand-eyebrow">GOOGLE WROCŁAW OFFICE · WALKTOBER 2026</span>
+          <span class="brand-name">The Wroogle Company</span>
+        </div>
+      </a>
+
+      <nav class="header-nav" aria-label="Expedition navigation">
+        <a href="#join-team-card" class="nav-link" id="nav-join-link">How to Join</a>
+        <a href="#expedition-map-section" class="nav-link" id="nav-map-link">World Map</a>
+        <a href="#milestones-section" class="nav-link" id="nav-trails-link">10 Trails</a>
+        <a href="#logbook-section" class="nav-link" id="nav-logbook-link">Step Updates</a>
+      </nav>
+
+      <div class="header-actions">
+        <button type="button" class="btn-ref-sheet" id="btn-open-ref-modal" title="View official Walktober milestones table">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <path d="M3 9h18M9 21V9" />
+          </svg>
+          <span>Official Table</span>
+        </button>
+
+        <a
+          href="https://stepcompete.corp.google.com/account"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn-check-steps"
+          id="btn-check-your-steps"
+          title="Check your personal Walktober steps on StepCompete"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+          </svg>
+          <span>Check Your Steps ↗</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Preview Simulator Banner (shown when user scrubs the simulator) -->
+  <div class="simulator-banner hidden" id="simulator-banner" role="status" aria-live="polite">
+    <div class="container simulator-banner-inner">
+      <div class="sim-banner-text">
+        <strong>🔭 Trail Simulator Mode Active:</strong>
+        Previewing expedition at <span id="sim-banner-steps" class="mono-num">0</span> steps.
+      </div>
+      <button type="button" class="btn-sim-reset" id="btn-sim-banner-reset">
+        Return to Live Team Count
+      </button>
+    </div>
+  </div>
+
+  <main id="top">
+    <!-- Hero Section: Expedition Overview & Active Leg Spotlight -->
+    <section class="hero-section">
+      <div class="container">
+        <!-- Team Dispatch Note -->
+        <div class="dispatch-bar" id="dispatch-bar">
+          <span class="dispatch-tag">WROCŁAW TEAM NOTE</span>
+          <p class="dispatch-message" id="team-dispatch-text">
+            Loading expedition telemetry from Wrocław HQ...
+          </p>
+          <span class="dispatch-meta" id="last-updated-meta">Updated recently</span>
+        </div>
+
+        <div class="hero-grid">
+          <!-- Left Column: Identity, Total Steps Counter & Local Wrocław Conversions -->
+          <div class="hero-main-card">
+            <div class="hero-kicker-row">
+              <span class="coords-tag">ORIGIN: 51.1079° N, 17.0385° E (WROCŁAW RYNEK)</span>
+              <span class="season-tag" id="october-day-badge">OCTOBER EXPEDITION</span>
+            </div>
+
+            <h1 class="hero-headline">
+              Ten Iconic Trails.<br />
+              One Unstoppable Wrocław Crew.
+            </h1>
+
+            <p class="hero-subtitle">
+              Every step walked by <strong>The Wroogle Company</strong> throughout October carries our Wrocław expedition across ten legendary world trails—from the ridges of Gurgaon to the summit of Kilimanjaro and the Appalachian Trail.
+            </p>
+
+            <!-- Big Live Odometer Step Block -->
+            <div class="primary-counter-box">
+              <div class="counter-top-row">
+                <span class="counter-label">CUMULATIVE TEAM STEPS</span>
+              </div>
+              <div class="counter-value-row">
+                <span class="counter-big-number mono-num" id="hero-total-steps">0</span>
+                <span class="counter-unit">steps walked</span>
+              </div>
+
+              <!-- Next Milestone Progress Bar inside Hero -->
+              <div class="hero-leg-progress-wrap">
+                <div class="hero-leg-labels">
+                  <span id="hero-leg-title">Active Leg #1: Aravalli Biodiversity Park (Gurgaon)</span>
+                  <span class="mono-num" id="hero-leg-fraction">0 / 20,000</span>
+                </div>
+                <div class="progress-track-outer" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="hero-leg-progressbar">
+                  <div class="progress-track-fill" id="hero-leg-fill" style="width: 0%"></div>
+                </div>
+                <div class="hero-leg-sublabels">
+                  <span id="hero-leg-percent">0.0% of leg from 0 to 20k</span>
+                  <span id="hero-leg-remaining"><strong>20,000 steps</strong> to unlock Gurgaon</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Fun Wrocław & Global Conversion Metrics -->
+            <div class="hero-metrics-strip">
+              <div class="metric-item">
+                <span class="metric-val mono-num" id="metric-unlocked-count">0 / 10</span>
+                <span class="metric-name">Trails Stamped</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-val mono-num" id="metric-km-walked">0 km</span>
+                <span class="metric-name">Global Distance</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-val mono-num" id="metric-rynek-laps">0 laps</span>
+                <span class="metric-name">Wrocław Rynek Laps</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-val mono-num" id="metric-krasnale-spotted">0</span>
+                <span class="metric-name">Wrocław Krasnale Passed</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Active Trail Postcard with Circular Progress Ring -->
+          <div class="hero-spotlight-card" id="hero-spotlight-card">
+            <div class="spotlight-header">
+              <div>
+                <span class="spotlight-eyebrow" id="spotlight-status-label">CURRENTLY TREKKING · TRAIL #1 OF 10</span>
+                <h2 class="spotlight-title" id="spotlight-trail-name">Aravalli Biodiversity Park</h2>
+                <p class="spotlight-location" id="spotlight-trail-location">📍 Gurgeon (Gurgaon, India)</p>
+              </div>
+
+              <!-- Circular SVG Progress Gauge -->
+              <div class="circular-gauge" title="Progress on current trail">
+                <svg viewBox="0 0 88 88" class="circular-gauge-svg">
+                  <circle class="gauge-bg" cx="44" cy="44" r="37" />
+                  <circle class="gauge-fill" id="spotlight-gauge-circle" cx="44" cy="44" r="37" stroke-dasharray="232.48" stroke-dashoffset="192" />
+                </svg>
+                <div class="gauge-center-text">
+                  <span class="gauge-pct mono-num" id="spotlight-gauge-pct">17%</span>
+                  <span class="gauge-sub">LEG</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="spotlight-image-frame">
+              <img src="/images/kiama.jpg" alt="Gerringong to Kiama Coastal Walk illustration" class="spotlight-img" id="spotlight-trail-img" />
+              <div class="spotlight-stamp-overlay" id="spotlight-stamp-badge">
+                <span>ACTIVE TRAIL</span>
+              </div>
+            </div>
+
+            <p class="spotlight-description" id="spotlight-trail-desc">
+              Dramatic volcanic basalt sea cliffs, rolling emerald headlands, and the roaring ocean spray of the Kiama Blowhole along the Tasman Sea coast.
+            </p>
+
+            <div class="spotlight-footer-stats">
+              <div class="spot-stat">
+                <span class="spot-stat-label">Milestone Target</span>
+                <strong class="spot-stat-val mono-num" id="spotlight-target-steps">46,000 steps</strong>
+              </div>
+              <div class="spot-stat">
+                <span class="spot-stat-label">This Trail Segment</span>
+                <strong class="spot-stat-val mono-num" id="spotlight-segment-steps">+26,000 steps</strong>
+              </div>
+              <div class="spot-stat">
+                <span class="spot-stat-label">Remaining Here</span>
+                <strong class="spot-stat-val mono-num highlight-terracotta" id="spotlight-needed-steps">21,500 steps</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 10-Checkpoint Horizontal Expedition Progress Ribbon -->
+        <div class="ribbon-card">
+          <div class="ribbon-header">
+            <div>
+              <h2 class="ribbon-title">Expedition Checkpoint Ribbon (Wrocław ➔ 10 World Trails)</h2>
+              <p class="ribbon-subtitle">Click any checkpoint along the route to inspect that destination, or drag the simulator slider to preview milestones.</p>
+            </div>
+            <div class="simulator-controls">
+              <label for="trail-simulator-slider" class="sim-slider-label">
+                <span>🔭 Preview Step Count:</span>
+                <strong class="mono-num" id="sim-slider-readout">Live</strong>
+              </label>
+              <input
+                type="range"
+                id="trail-simulator-slider"
+                class="sim-range-input"
+                min="0"
+                max="1000"
+                value="125"
+                aria-label="Preview expedition progress at different step counts"
+              />
+              <button type="button" class="btn-sim-inline-reset hidden" id="btn-sim-inline-reset">Reset</button>
+            </div>
+          </div>
+
+          <div class="checkpoint-ribbon-track-wrap">
+            <div class="checkpoint-ribbon-line-bg"></div>
+            <div class="checkpoint-ribbon-line-fill" id="ribbon-line-fill" style="width: 0%"></div>
+            <!-- Animated Hiker Avatar Marker on the Ribbon -->
+            <div class="ribbon-hiker-avatar" id="ribbon-hiker-avatar" style="left: 3%" title="The Wroogle Company current position">
+              <img src="/images/wroogle-crest.jpg" alt="Wroogle Hiker" />
+              <span class="hiker-tooltip mono-num" id="ribbon-hiker-tooltip">0</span>
+            </div>
+            <div class="checkpoint-nodes-row" id="checkpoint-nodes-row">
+              <!-- Populated dynamically by app.js -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Walktober 2026 Registration & Join "The Wroogle Company" Banner -->
+        <div class="join-team-card" id="join-team-card">
+          <div class="join-team-main">
+            <span class="section-eyebrow">NOT REGISTERED YET? · WALKTOBER 2026</span>
+            <h2 class="join-team-title">The Trails Are Calling — Join "The Wroogle Company"!</h2>
+            <p class="join-team-tldr">
+              <strong>TL;DR:</strong> Registration for Walktober is now open at
+              <a href="http://go/walktober" target="_blank" rel="noopener noreferrer" class="inline-maps-link">go/walktober</a>
+              and
+              <a href="http://go/walktober-tool" target="_blank" rel="noopener noreferrer" class="inline-maps-link">go/walktober-tool</a>.
+              It’s time to lace up and get moving for four weeks of adventure with our Wrocław team!
+            </p>
+
+            <ul class="join-reminders-list">
+              <li><strong>Googler-only event:</strong> Open to all Googlers ready to walk and hit milestone steps together.</li>
+              <li><strong>Two signup options:</strong> Connect via <strong>Fitbit</strong> (personal or corporate) or <strong>Google Fit</strong> (personal or corporate).</li>
+              <li><strong>[Android only] HealthConnect:</strong> Syncs directly with <strong>Garmin</strong>, <strong>Samsung Health</strong>, <strong>Oura</strong>, and <strong>Xiaomi / Mi Fitness</strong>.</li>
+              <li><strong>Wrocław Office Team:</strong> Join our WRO team <strong>"The Wroogle Company"</strong> using the button on the right!</li>
+            </ul>
+          </div>
+
+          <div class="join-team-cta-box">
+            <a
+              href="https://stepcompete.corp.google.com/signup?teamId=8834678116002329048"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn-join-wroogle"
+              id="btn-join-wroogle-team"
+            >
+              🥾 Join "The Wroogle Company" ↗
+            </a>
+            <div class="join-quick-links">
+              <a href="http://go/walktober" target="_blank" rel="noopener noreferrer" class="btn-secondary-sm">go/walktober ↗</a>
+              <a href="http://go/walktober-tool" target="_blank" rel="noopener noreferrer" class="btn-secondary-sm">go/walktober-tool ↗</a>
+            </div>
+          </div>
+
+          <!-- Team Members Roster Strip -->
+          <div class="team-roster-strip" id="team-roster-strip">
+            <div class="team-roster-header">
+              <div class="team-roster-title-group">
+                <span class="section-eyebrow">EXPEDITION CREW ROSTER</span>
+                <h3 class="team-roster-heading">
+                  The Wroogle Company Walkers
+                  <span class="roster-count-pill mono-num" id="roster-count-pill">0 joined</span>
+                </h3>
+              </div>
+            </div>
+            <div class="team-roster-list" id="team-roster-list">
+              <!-- Populated dynamically by app.js -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive World Expedition Map + Selected Trail Field Guide -->
+    <section class="map-section" id="expedition-map-section">
+      <div class="container">
+        <div class="section-header-row">
+          <div>
+            <span class="section-eyebrow">CARTOGRAPHY & ROUTE TELEMETRY</span>
+            <h2 class="section-title">The Wroogle Global Trek Map</h2>
+          </div>
+          <p class="section-lead">
+            Follow our expedition lines from Wrocław HQ across five continents. Select any pinned trailhead on the map to inspect its terrain, elevation, and step progress.
+          </p>
+        </div>
+
+        <div class="map-explorer-grid">
+          <!-- Interactive SVG World Map -->
+          <div class="world-map-card">
+            <div class="map-card-topbar">
+              <span class="map-legend-item"><span class="legend-dot hq"></span> Wrocław HQ</span>
+              <span class="map-legend-item"><span class="legend-dot unlocked"></span> Stamped Trail</span>
+              <span class="map-legend-item"><span class="legend-dot active"></span> Currently Trekking</span>
+              <span class="map-legend-item"><span class="legend-dot locked"></span> Future Milestone</span>
+            </div>
+
+            <div class="world-map-canvas" id="world-map-canvas">
+              <svg viewBox="0 0 1000 500" class="expedition-svg-map" id="expedition-svg-map" aria-label="Interactive world map of Walktober 2026 milestones">
+                <defs>
+                  <pattern id="ocean-lines" width="40" height="40" patternUnits="userSpaceOnUse">
+                    <path d="M 0 20 Q 10 17, 20 20 T 40 20" fill="none" stroke="rgba(26, 58, 45, 0.055)" stroke-width="1" />
+                  </pattern>
+                  <filter id="pin-shadow" x="-30%" y="-30%" width="160%" height="160%">
+                    <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#142920" flood-opacity="0.28" />
+                  </filter>
+                </defs>
+
+                <!-- Subtle Ocean Wave Pattern -->
+                <rect width="1000" height="500" fill="url(#ocean-lines)" />
+
+                <!-- Equator & Tropics Cartographic Reference Lines -->
+                <line x1="0" y1="260" x2="1000" y2="260" class="map-lat-line equator" />
+                <line x1="0" y1="160" x2="1000" y2="160" class="map-lat-line" />
+                <line x1="0" y1="360" x2="1000" y2="360" class="map-lat-line" />
+                <text x="16" y="254" class="map-lat-label">EQUATOR 0°</text>
+                <text x="16" y="154" class="map-lat-label">TROPIC OF CANCER</text>
+                <text x="16" y="354" class="map-lat-label">TROPIC OF CAPRICORN</text>
+
+                <!-- Stylized Continents Silhouette Layer -->
+                <g class="map-continents">
+                  <!-- North America -->
+                  <path d="M 75 72 L 165 62 L 248 80 L 295 125 L 265 178 L 235 206 L 205 225 L 175 208 L 138 175 L 115 135 L 70 105 Z" />
+                  <!-- Greenland -->
+                  <path d="M 310 38 L 385 32 L 398 70 L 345 86 L 312 68 Z" />
+                  <!-- South America -->
+                  <path d="M 235 235 L 295 252 L 342 300 L 325 368 L 288 446 L 262 452 L 252 380 L 228 302 Z" />
+                  <!-- Europe -->
+                  <path d="M 438 72 L 515 58 L 578 72 L 585 135 L 542 156 L 495 158 L 452 146 L 435 118 Z" />
+                  <!-- UK & Ireland -->
+                  <path d="M 442 102 L 462 98 L 468 122 L 445 124 Z" />
+                  <!-- Africa -->
+                  <path d="M 445 172 L 535 170 L 598 212 L 608 282 L 575 375 L 532 392 L 502 330 L 485 268 L 438 232 Z" />
+                  <!-- Asia -->
+                  <path d="M 580 68 L 745 55 L 885 82 L 915 145 L 855 215 L 785 245 L 725 225 L 685 245 L 635 205 L 592 162 Z" />
+                  <!-- Southeast Asia / Indonesia -->
+                  <path d="M 768 258 L 835 268 L 868 298 L 795 304 Z" />
+                  <!-- Australia -->
+                  <path d="M 785 335 L 885 328 L 912 382 L 875 422 L 798 412 L 775 375 Z" />
+                  <!-- New Zealand -->
+                  <path d="M 935 418 L 956 408 L 962 438 L 940 444 Z" />
+                </g>
+
+                <!-- Dynamic Route Paths Layer (Rendered by app.js) -->
+                <g id="map-routes-layer"></g>
+
+                <!-- Dynamic Milestone Pins Layer (Rendered by app.js) -->
+                <g id="map-pins-layer"></g>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Selected Milestone Field Guide Inspector -->
+          <aside class="map-inspector-card" id="map-inspector-card" aria-live="polite">
+            <div class="inspector-top-badges">
+              <span class="inspector-number-badge mono-num" id="inspector-number">TRAIL #01</span>
+              <span class="inspector-status-pill" id="inspector-status">STAMPED</span>
+            </div>
+
+            <div class="inspector-img-wrap">
+              <img src="/images/aravalli.jpg" alt="Selected trail artwork" class="inspector-img" id="inspector-img" />
+              <div class="inspector-ring-badge">
+                <span class="mono-num" id="inspector-pct">0%</span>
+              </div>
+            </div>
+
+            <h3 class="inspector-title" id="inspector-title">Aravalli Biodiversity Park</h3>
+            <p class="inspector-loc" id="inspector-loc">Gurgaon (Gurgeon), India · 28.48° N, 77.11° E</p>
+            <p class="inspector-lore" id="inspector-lore">
+              Once a barren mining site, now a thriving 380-acre urban forest sanctuary of native Aravalli scrub, peacocks, and quartzite ridges.
+            </p>
+
+            <div class="inspector-progress-box">
+              <div class="inspector-prog-row">
+                <span>Cumulative Target</span>
+                <strong class="mono-num" id="inspector-target">20,000 steps</strong>
+              </div>
+              <div class="inspector-prog-row">
+                <span>Trail Leg Distance</span>
+                <strong class="mono-num" id="inspector-leg">+20,000 steps</strong>
+              </div>
+              <div class="inspector-prog-row">
+                <span>Status for Wroogle Co.</span>
+                <strong class="mono-num" id="inspector-remaining">20,000 steps to unlock</strong>
+              </div>
+            </div>
+
+            <div class="inspector-nav-btns">
+              <button type="button" class="btn-inspector-step" id="btn-inspector-prev">← Previous Trail</button>
+              <button type="button" class="btn-inspector-step" id="btn-inspector-next">Next Trail →</button>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- All 10 Milestone Trail Cards + Pace & Goal Outlook -->
+    <section class="milestones-section" id="milestones-section">
+      <div class="container">
+        <div class="section-header-row">
+          <div>
+            <span class="section-eyebrow">PASSPORT STAMPS & TRAIL PROGRESS</span>
+            <h2 class="section-title">10 Walktober Trails & Team Pace</h2>
+          </div>
+
+          <div class="filter-pills" role="group" aria-label="Filter milestone trails">
+            <button type="button" class="filter-btn active" data-filter="all" id="filter-all">All 10 Trails</button>
+            <button type="button" class="filter-btn" data-filter="unlocked" id="filter-unlocked">Stamped</button>
+            <button type="button" class="filter-btn" data-filter="upcoming" id="filter-upcoming">In Progress & Ahead</button>
+          </div>
+        </div>
+
+        <!-- Expedition Pace & Goal Outlook right inside the Trails section -->
+        <div class="pace-banner-card" id="pace-banner-card">
+          <div class="pace-banner-top">
+            <div class="pace-story-col">
+              <span class="section-eyebrow">OCTOBER PACE & GOAL OUTLOOK</span>
+              <h3 class="subsection-title" id="pace-headline-summary">Expedition Pace & Goal Outlook</h3>
+              <p class="pace-plain-story" id="pace-plain-story">
+                Calculating how fast The Wroogle Company is moving this October...
+              </p>
+            </div>
+            <div class="wroclaw-spirit-note">
+              <img src="/images/wroogle-crest.jpg" alt="Wroogle Dwarf" class="spirit-mini-crest" />
+              <div>
+                <strong>Quick Team Math:</strong>
+                <p id="wroclaw-tip-text">
+                  A 30-minute walk around Wrocław Rynek or Ostrów Tumski is ~3,500 steps per person. Just 10 teammates walking daily adds <strong>+35,000 team steps every single day</strong>!
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="pace-targets-grid" id="pace-targets-list">
+            <!-- Populated dynamically by app.js -->
+          </div>
+        </div>
+
+        <!-- Winding Trail Cards Container -->
+        <div class="milestones-trail-grid" id="milestones-trail-grid">
+          <!-- Populated dynamically by app.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Recent Step Updates Section (at bottom) -->
+    <section class="logbook-section" id="logbook-section">
+      <div class="container">
+        <div class="history-card">
+          <div class="history-card-header">
+            <div>
+              <span class="section-eyebrow">TEAM ACTIVITY</span>
+              <h2 class="subsection-title">Recent Step Updates</h2>
+            </div>
+            <button type="button" class="btn-secondary-sm" id="btn-logbook-add">
+              + Enter Steps
+            </button>
+          </div>
+
+          <div class="history-list" id="history-list">
+            <!-- Populated dynamically by app.js -->
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <strong>The Wroogle Company</strong> · Google Wrocław Walktober 2026
+      </div>
+      <div class="footer-links">
+        <a href="/api/export" class="footer-link" id="footer-export-link">Download JSON Backup</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Official Walktober Reference Image & Table Modal -->
+  <div class="modal-backdrop hidden" id="ref-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="ref-modal-title">
+    <div class="modal-card ref-modal-card">
+      <div class="modal-header">
+        <div>
+          <span class="section-eyebrow">OFFICIAL WALKTOBER 2026 MILESTONES</span>
+          <h2 class="modal-title" id="ref-modal-title">Milestone Trail Reference Sheet</h2>
+        </div>
+        <button type="button" class="btn-modal-close" id="btn-close-ref-modal" aria-label="Close reference sheet">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="ref-table-wrap">
+          <table class="official-milestone-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Milestone Trail</th>
+                <th>Location</th>
+                <th>Cumulative Steps</th>
+                <th>Wroogle Status</th>
+              </tr>
+            </thead>
+            <tbody id="official-table-body">
+              <!-- Populated by app.js -->
+            </tbody>
+          </table>
+        </div>
+        <details class="original-image-details">
+          <summary>View Original Walktober Milestones Image (MilestonesWalktober.png)</summary>
+          <img src="/images/MilestonesWalktober.png" alt="Original Walktober Milestones Table" class="original-sheet-img" />
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step Update Modal -->
+  <div class="modal-backdrop hidden" id="admin-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="admin-modal-title">
+    <div class="modal-card admin-modal-card">
+      <div class="modal-header">
+        <div>
+          <span class="section-eyebrow">TEAM UPDATES & ROSTER</span>
+          <h2 class="modal-title" id="admin-modal-title">Enter Team Steps & Members</h2>
+        </div>
+        <button type="button" class="btn-modal-close" id="btn-close-admin-modal" aria-label="Close step entry modal">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Auth State Banner -->
+        <div class="auth-status-banner" id="auth-status-banner">
+          <!-- Populated dynamically -->
+        </div>
+
+        <!-- Login Form (Shown when not authenticated via IAP or Session) -->
+        <form id="admin-login-form" class="admin-form-section hidden">
+          <p class="form-helper-text">
+            Sign in with your authorized LDAP to enter team steps or add team members:
+          </p>
+          <div class="form-row-2col">
+            <div class="form-group">
+              <label for="login-ldap-input">LDAP Username</label>
+              <input type="text" id="login-ldap-input" name="ldap" value="mokshazna" required autocomplete="username" />
+            </div>
+            <div class="form-group">
+              <label for="login-password-input">Passcode</label>
+              <input type="password" id="login-password-input" name="password" placeholder="Enter passcode" required autocomplete="current-password" />
+            </div>
+          </div>
+          <div class="form-error hidden" id="login-error-msg"></div>
+          <button type="submit" class="btn-primary-action" id="btn-login-submit">
+            Unlock Step Entry
+          </button>
+        </form>
+
+        <!-- Authenticated Controls -->
+        <div id="admin-controls-panel" class="admin-controls-panel hidden">
+          <form id="step-update-form" class="step-update-form">
+            <div class="mode-toggle-tabs" role="radiogroup" aria-label="Step update mode">
+              <button type="button" class="mode-tab active" data-mode="add" id="tab-mode-add">
+                ➕ Add Steps to Total
+              </button>
+              <button type="button" class="mode-tab" data-mode="set" id="tab-mode-set">
+                🎯 Set Exact Cumulative Steps
+              </button>
+            </div>
+
+            <div class="quick-chips-row" id="quick-chips-row">
+              <span class="quick-chips-label">Quick Add:</span>
+              <button type="button" class="chip-btn" data-add="5000">+5,000</button>
+              <button type="button" class="chip-btn" data-add="10000">+10,000</button>
+              <button type="button" class="chip-btn" data-add="25000">+25,000</button>
+              <button type="button" class="chip-btn" data-add="50000">+50,000</button>
+              <button type="button" class="chip-btn" data-add="100000">+100,000</button>
+            </div>
+
+            <div class="form-row-2col">
+              <div class="form-group">
+                <label for="admin-steps-input" id="admin-steps-label">Steps to Add (+)</label>
+                <input
+                  type="number"
+                  id="admin-steps-input"
+                  min="0"
+                  step="1"
+                  placeholder="e.g. 15400"
+                  required
+                  class="mono-num"
+                />
+              </div>
+              <div class="form-group">
+                <label>Resulting Team Total Preview</label>
+                <div class="resulting-total-preview mono-num" id="resulting-total-preview">0 steps</div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="admin-note-input">Update Note (optional)</label>
+              <input
+                type="text"
+                id="admin-note-input"
+                maxlength="200"
+                placeholder="e.g. Friday team walk along the Odra River embankment!"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="admin-dispatch-input">Team Banner Message (shown at top of page)</label>
+              <input
+                type="text"
+                id="admin-dispatch-input"
+                maxlength="320"
+                placeholder="Motivational note for The Wroogle Company..."
+              />
+            </div>
+
+            <div class="form-feedback hidden" id="admin-form-feedback"></div>
+
+            <div class="admin-submit-row">
+              <button type="submit" class="btn-primary-action" id="btn-save-steps">
+                Save Team Steps
+              </button>
+              <button type="button" class="btn-logout-link" id="btn-admin-logout">
+                Lock
+              </button>
+            </div>
+          </form>
+
+          <!-- Ad-Hoc Team Members Roster Section -->
+          <div class="admin-members-box" id="admin-members-box">
+            <div class="admin-members-header">
+              <strong>🥾 Team Members Roster ("The Wroogle Company")</strong>
+              <p>Add names or LDAPs of teammates who joined (separate multiple names with commas):</p>
+            </div>
+            <form id="member-add-form" class="member-add-form">
+              <input
+                type="text"
+                id="admin-member-input"
+                placeholder="e.g. Ania K., Piotr W., mokshazna"
+                maxlength="240"
+              />
+              <button type="submit" class="btn-secondary-sm btn-add-member" id="btn-add-member">
+                + Add to Roster
+              </button>
+            </form>
+            <div class="admin-members-chips" id="admin-members-chips">
+              <!-- Populated dynamically by app.js -->
+            </div>
+          </div>
+
+          <!-- Backup & Restore Section for Cloud Run -->
+          <div class="admin-backup-box">
+            <div class="backup-info">
+              <strong>Cloud Run Data Backup (JSON)</strong>
+              <p>Download a snapshot of all steps and history or restore from a JSON file anytime.</p>
+            </div>
+            <div class="backup-actions">
+              <a href="/api/export" class="btn-secondary-sm" id="btn-admin-export">⬇ Export JSON</a>
+              <label class="btn-secondary-sm file-upload-label" for="admin-import-file">
+                ⬆ Import JSON
+                <input type="file" id="admin-import-file" accept=".json,application/json" class="hidden" />
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Celebration Notification -->
+  <div class="toast-notification hidden" id="toast-notification" role="status" aria-live="polite"></div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
