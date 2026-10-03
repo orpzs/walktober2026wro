@@ -1,6 +1,6 @@
 {
-  "totalSteps": 87422,
-  "updatedAt": "2026-10-02T11:12:27.770Z",
+  "totalSteps": 242233,
+  "updatedAt": "2026-10-02T21:14:18.885Z",
   "updatedBy": "mokshazna",
   "teamMessage": "Welcome to Walktober 2026, Wrooglers! Lace up in Wrocław and let's conquer all 10 world trails together!",
   "members": [
@@ -17,9 +17,32 @@
     "Paweł Glica",
     "Ewa Owczarewicz",
     "Mohamed Abdalhamid",
-    "Iwona Chmielik"
+    "Iwona Chmielik",
+    "Paweł Tokarski"
+  ],
+  "visitors": [
+    {
+      "ldap": "mokshazna",
+      "lastSeen": "2026-10-03T18:21:51.574Z",
+      "visits": 3
+    },
+    {
+      "ldap": "ptokarski",
+      "lastSeen": "2026-10-02T13:57:24.208Z",
+      "visits": 1
+    }
   ],
   "history": [
+    {
+      "id": "evt-1790975658963-0n87",
+      "timestamp": "2026-10-02T21:14:18.885Z",
+      "mode": "set",
+      "delta": 154811,
+      "previousSteps": 87422,
+      "newSteps": 242233,
+      "note": "Updated total team steps to 242,233",
+      "actor": "mokshazna"
+    },
     {
       "id": "evt-1790928840775-3uc3",
       "timestamp": "2026-10-02T08:14:00.709Z",

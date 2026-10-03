@@ -63,6 +63,32 @@ function normalizeMembers(rawMembers) {
   return clean.slice(0, 300);
 }
 
+const SEED_VISITORS = [
+  { ldap: 'mokshazna', lastSeen: '2026-10-03T18:21:51.574Z', visits: 3 },
+  { ldap: 'ptokarski', lastSeen: '2026-10-02T13:57:24.208Z', visits: 1 }
+];
+
+function normalizeVisitors(rawVisitors) {
+  const source = Array.isArray(rawVisitors) ? rawVisitors : SEED_VISITORS;
+  const byLdap = new Map();
+  for (const item of source) {
+    if (!item || typeof item !== 'object') continue;
+    const ldap = String(item.ldap || '')
+      .trim()
+      .toLowerCase()
+      .slice(0, 60);
+    if (!ldap || ldap === 'anonymous') continue;
+    const lastSeen = item.lastSeen || new Date().toISOString();
+    const visits = Math.max(1, Math.round(Number(item.visits) || 1));
+    if (!byLdap.has(ldap)) {
+      byLdap.set(ldap, { ldap, lastSeen, visits });
+    }
+  }
+  return Array.from(byLdap.values())
+    .sort((a, b) => new Date(b.lastSeen).getTime() - new Date(a.lastSeen).getTime())
+    .slice(0, 200);
+}
+
 function readState() {
   ensureDataFile();
   try {
@@ -77,6 +103,7 @@ function readState() {
           ? parsed.teamMessage
           : 'Onward from Wrocław to the Appalachian Trail!',
       members: normalizeMembers(parsed.members),
+      visitors: normalizeVisitors(parsed.visitors),
       history: Array.isArray(parsed.history) ? parsed.history : []
     };
   } catch (err) {
@@ -87,6 +114,7 @@ function readState() {
       updatedBy: ADMIN_LDAP,
       teamMessage: 'Onward from Wrocław to the Appalachian Trail!',
       members: [],
+      visitors: normalizeVisitors(SEED_VISITORS),
       history: []
     };
   }
@@ -103,11 +131,12 @@ function writeState(newState) {
         ? newState.teamMessage.slice(0, 400)
         : '',
     members: normalizeMembers(newState.members),
+    visitors: normalizeVisitors(newState.visitors),
     history: Array.isArray(newState.history) ? newState.history.slice(0, 150) : []
   };
   fs.writeFileSync(DATA_FILE, JSON.stringify(safeState, null, 2), 'utf8');
   console.log(
-    `[STATE_SAVED] file=${DATA_FILE} totalSteps=${safeState.totalSteps} members=${safeState.members.length} history=${safeState.history.length}`
+    `[STATE_SAVED] file=${DATA_FILE} totalSteps=${safeState.totalSteps} members=${safeState.members.length} visitors=${safeState.visitors.length} history=${safeState.history.length}`
   );
   return safeState;
 }
@@ -261,10 +290,41 @@ const server = http.createServer(async (req, res) => {
 
   // GET /api/state
   if (pathname === '/api/state' && req.method === 'GET') {
-    const state = readState();
+    let state = readState();
     const auth = getAuthContext(req);
     const iapUser = extractIapLdap(req) || auth.ldap || 'anonymous';
     console.log(`[PAGE_VIEW] ldap=${iapUser} steps=${state.totalSteps} members=${state.members.length}`);
+
+    if (iapUser && iapUser !== 'anonymous') {
+      const nowIso = new Date().toISOString();
+      const existingIdx = state.visitors.findIndex((v) => v.ldap === iapUser);
+      let shouldPersist = false;
+      const nextVisitors = [...state.visitors];
+
+      if (existingIdx === -1) {
+        nextVisitors.unshift({ ldap: iapUser, lastSeen: nowIso, visits: 1 });
+        shouldPersist = true;
+      } else {
+        const prev = nextVisitors[existingIdx];
+        const elapsedMs = Date.now() - new Date(prev.lastSeen).getTime();
+        if (elapsedMs > 60 * 1000) {
+          nextVisitors[existingIdx] = {
+            ldap: iapUser,
+            lastSeen: nowIso,
+            visits: (prev.visits || 1) + 1
+          };
+          shouldPersist = true;
+        }
+      }
+
+      if (shouldPersist) {
+        state = writeState({
+          ...state,
+          visitors: nextVisitors
+        });
+      }
+    }
+
     return sendJson(res, 200, { ...state, auth });
   }
 
@@ -382,6 +442,7 @@ const server = http.createServer(async (req, res) => {
         updatedBy: auth.ldap || ADMIN_LDAP,
         teamMessage: nextTeamMessage,
         members: state.members,
+        visitors: state.visitors,
         history: [entry, ...state.history]
       });
 
@@ -520,6 +581,7 @@ const server = http.createServer(async (req, res) => {
         updatedBy: auth.ldap || ADMIN_LDAP,
         teamMessage: body.teamMessage || 'Restored expedition state.',
         members: Array.isArray(body.members) ? body.members : state.members,
+        visitors: Array.isArray(body.visitors) ? body.visitors : state.visitors,
         history: Array.isArray(body.history) ? body.history : []
       });
       return sendJson(res, 200, { ...updatedState, auth });

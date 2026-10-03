@@ -2287,6 +2287,45 @@ body {
   color: hsl(0, 72%, 42%);
 }
 
+.admin-visitors-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.admin-visitors-header-row strong {
+  font-size: 0.88rem;
+  color: var(--text-ink);
+}
+
+.admin-visitors-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-height: 110px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.admin-visitor-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 99px;
+  background: var(--bg-sand-subtle);
+  border: 1px solid var(--border-warm);
+  font-size: 0.78rem;
+  color: var(--text-ink);
+}
+
+.visitor-chip-meta {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
 .admin-backup-box {
   margin-top: 20px;
   padding-top: 16px;

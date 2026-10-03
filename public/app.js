@@ -181,6 +181,7 @@ const appState = {
   updatedBy: 'mokshazna',
   teamMessage: '',
   members: [],
+  visitors: [],
   history: [],
   auth: {
     isAdmin: false,
@@ -874,6 +875,41 @@ function renderTeamRoster() {
       });
     }
   }
+
+  // Render Compact Unique Visitors inside Admin Modal
+  const visitors = Array.isArray(appState.visitors) ? appState.visitors : [];
+  const visitorsCountEl = document.getElementById('admin-visitors-count');
+  const visitorsChipsEl = document.getElementById('admin-visitors-chips');
+  if (visitorsCountEl) {
+    visitorsCountEl.textContent = `${visitors.length} unique`;
+  }
+  if (visitorsChipsEl) {
+    if (visitors.length === 0) {
+      visitorsChipsEl.innerHTML = `<span class="roster-empty-msg">No IAP visitors recorded yet.</span>`;
+    } else {
+      visitorsChipsEl.innerHTML = visitors
+        .map((v) => {
+          const dt = v.lastSeen ? new Date(v.lastSeen) : null;
+          const timeStr =
+            dt && !Number.isNaN(dt.getTime())
+              ? dt.toLocaleString('en-GB', {
+                  day: 'numeric',
+                  month: 'short',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })
+              : '';
+          const visitsBadge = v.visits > 1 ? ` · ${v.visits}x` : '';
+          return `
+            <span class="admin-visitor-chip" title="Last visited: ${escapeHtml(timeStr)}">
+              <strong>${escapeHtml(v.ldap)}</strong>
+              <span class="visitor-chip-meta">${escapeHtml(timeStr)}${visitsBadge}</span>
+            </span>
+          `;
+        })
+        .join('');
+    }
+  }
 }
 
 function escapeHtml(str) {
@@ -916,6 +952,7 @@ function applyServerState(data) {
   appState.updatedBy = data.updatedBy || 'mokshazna';
   appState.teamMessage = data.teamMessage || '';
   appState.members = Array.isArray(data.members) ? data.members : [];
+  appState.visitors = Array.isArray(data.visitors) ? data.visitors : [];
   appState.history = Array.isArray(data.history) ? data.history : [];
   if (data.auth) {
     appState.auth = data.auth;
