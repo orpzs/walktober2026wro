@@ -4,8 +4,8 @@
  */
 
 const WROCLAW_HQ = {
-  name: 'Wrocław HQ (The Wroogle Co.)',
-  coords: '51.1079° N, 17.0385° E',
+  name: 'Wrocław HQ (Pl. Bema 2)',
+  coords: '51.1165° N, 17.0405° E',
   mapX: 515,
   mapY: 112
 };
