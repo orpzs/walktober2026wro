@@ -1,6 +1,6 @@
 {
-  "totalSteps": 242233,
-  "updatedAt": "2026-10-02T21:14:18.885Z",
+  "totalSteps": 400289,
+  "updatedAt": "2026-10-03T20:58:04.815Z",
   "updatedBy": "mokshazna",
   "teamMessage": "Welcome to Walktober 2026, Wrooglers! Lace up in Wrocław and let's conquer all 10 world trails together!",
   "members": [
@@ -23,8 +23,13 @@
   "visitors": [
     {
       "ldap": "mokshazna",
-      "lastSeen": "2026-10-03T18:21:51.574Z",
-      "visits": 3
+      "lastSeen": "2026-10-04T11:58:12.282Z",
+      "visits": 5
+    },
+    {
+      "ldap": "malshafaey",
+      "lastSeen": "2026-10-03T23:26:02.768Z",
+      "visits": 1
     },
     {
       "ldap": "ptokarski",
@@ -33,6 +38,16 @@
     }
   ],
   "history": [
+    {
+      "id": "evt-1791061084913-fbd6",
+      "timestamp": "2026-10-03T20:58:04.815Z",
+      "mode": "set",
+      "delta": 158056,
+      "previousSteps": 242233,
+      "newSteps": 400289,
+      "note": "Updated total team steps to 400,289",
+      "actor": "mokshazna"
+    },
     {
       "id": "evt-1790975658963-0n87",
       "timestamp": "2026-10-02T21:14:18.885Z",

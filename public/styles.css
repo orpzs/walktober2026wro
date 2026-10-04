@@ -807,12 +807,14 @@ body {
 .checkpoint-nodes-row {
   position: relative;
   z-index: 4;
-  display: grid;
-  grid-template-columns: repeat(10, 1fr);
-  gap: 6px;
+  height: 98px;
 }
 
 .checkpoint-node {
+  position: absolute;
+  top: 0;
+  left: var(--node-left, 50%);
+  transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -821,12 +823,12 @@ body {
   background: none;
   border: none;
   font-family: inherit;
-  padding: 4px 2px;
+  padding: 0 2px;
   transition: transform 0.16s ease;
 }
 
 .checkpoint-node:hover {
-  transform: translateY(-2px);
+  transform: translateX(-50%) translateY(-2px);
 }
 
 .node-circle {
@@ -842,7 +844,7 @@ body {
   font-size: 0.76rem;
   font-weight: 700;
   color: var(--text-muted);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   transition: all 0.2s ease;
   box-shadow: var(--shadow-sm);
 }
@@ -861,17 +863,27 @@ body {
 }
 
 .node-city {
-  font-size: 0.76rem;
+  font-size: 0.74rem;
   font-weight: 700;
   color: var(--text-ink);
-  line-height: 1.2;
-  margin-bottom: 2px;
+  line-height: 1.15;
+  margin-bottom: 1px;
+  white-space: nowrap;
 }
 
 .node-steps {
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: 0.67rem;
+  font-weight: 700;
+  color: var(--text-body);
+  line-height: 1.15;
+}
+
+.node-leg {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
   color: var(--text-muted);
+  line-height: 1.15;
 }
 
 /* ==================== WALKTOBER REGISTRATION & JOIN TEAM CARD ==================== */
@@ -2387,13 +2399,25 @@ body {
   }
 
   .checkpoint-nodes-row {
+    display: grid;
     grid-template-columns: repeat(5, 1fr);
     row-gap: 16px;
+    height: auto;
+  }
+
+  .checkpoint-node {
+    position: static;
+    transform: none;
+  }
+
+  .checkpoint-node:hover {
+    transform: translateY(-2px);
   }
 
   .checkpoint-ribbon-line-bg,
   .checkpoint-ribbon-line-fill,
-  .ribbon-hiker-avatar {
+  .ribbon-hiker-avatar,
+  .ribbon-final-stretch-tag {
     display: none;
   }
 }

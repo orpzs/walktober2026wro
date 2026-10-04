@@ -213,9 +213,23 @@ function formatCompactSteps(n) {
 }
 
 /**
- * Maps step count (0 .. 5,403,000) to a piecewise 0..1000 slider scale
- * so each of the 10 milestones gets 100 units (10% of the visual ribbon).
+ * Log-weighted track positions (0..1 along the 94% ribbon track) for the 10 milestones
+ * so each trail leg's visual width reflects its step distance (+20k up to +4.38M)
+ * without crowding the early checkpoints.
  */
+const RIBBON_TRACK_RATIOS = [
+  0.055, // #1 Gurgaon (20k, +20k leg)
+  0.113, // #2 Sydney (46k, +26k leg)
+  0.175, // #3 London (81k, +35k leg)
+  0.243, // #4 Peru (137k, +56k leg)
+  0.315, // #5 Dublin (203k, +66k leg)
+  0.401, // #6 Tanzania (333k, +130k leg)
+  0.491, // #7 Chile (483k, +150k leg)
+  0.597, // #8 Mont Blanc (703k, +220k leg)
+  0.722, // #9 John Muir (1.02M, +320k leg)
+  1.0    // #10 Appalachian (5.40M, +4.38M final leg)
+];
+
 function stepsToPiecewisePermille(steps) {
   if (steps <= 0) return 0;
   const maxSteps = MILESTONES[MILESTONES.length - 1].steps;
@@ -227,7 +241,10 @@ function stepsToPiecewisePermille(steps) {
       const segLen = m.steps - m.prevSteps;
       const intoSeg = steps - m.prevSteps;
       const frac = segLen > 0 ? intoSeg / segLen : 1;
-      return Math.round((i + frac) * 100);
+      const startRatio = i === 0 ? 0 : RIBBON_TRACK_RATIOS[i - 1];
+      const endRatio = RIBBON_TRACK_RATIOS[i];
+      const ratio = startRatio + frac * (endRatio - startRatio);
+      return Math.round(ratio * 1000);
     }
   }
   return 1000;
@@ -238,12 +255,18 @@ function piecewisePermilleToSteps(permille) {
   if (clamped === 0) return 0;
   if (clamped >= 1000) return MILESTONES[MILESTONES.length - 1].steps;
 
-  const bucket = Math.min(9, Math.floor(clamped / 100));
-  const frac = (clamped - bucket * 100) / 100;
-  const m = MILESTONES[bucket];
-  const steps = m.prevSteps + frac * (m.steps - m.prevSteps);
-  // Round to nearest 500 for clean numbers
-  return Math.round(steps / 500) * 500;
+  const targetRatio = clamped / 1000;
+  for (let i = 0; i < MILESTONES.length; i++) {
+    const startRatio = i === 0 ? 0 : RIBBON_TRACK_RATIOS[i - 1];
+    const endRatio = RIBBON_TRACK_RATIOS[i];
+    if (targetRatio <= endRatio) {
+      const frac = endRatio > startRatio ? (targetRatio - startRatio) / (endRatio - startRatio) : 1;
+      const m = MILESTONES[i];
+      const steps = m.prevSteps + frac * (m.steps - m.prevSteps);
+      return Math.round(steps / 500) * 500;
+    }
+  }
+  return MILESTONES[MILESTONES.length - 1].steps;
 }
 
 function getTrailStatus(milestone, currentSteps) {
@@ -425,7 +448,6 @@ function renderCheckpointRibbon() {
   const steps = getEffectiveSteps();
   const permille = stepsToPiecewisePermille(steps);
   // Ribbon line goes from left 3% to right 3% (94% total span)
-  // Milestone i (0..9) center is at (i + 0.5) / 10
   const fillPct = Math.max(0, Math.min(94, (permille / 1000) * 94));
   const avatarLeftPct = 3 + fillPct;
 
@@ -434,14 +456,25 @@ function renderCheckpointRibbon() {
   document.getElementById('ribbon-hiker-tooltip').textContent = formatCompactSteps(steps);
 
   const row = document.getElementById('checkpoint-nodes-row');
-  row.innerHTML = MILESTONES.map((m) => {
+  row.innerHTML = MILESTONES.map((m, idx) => {
     const st = getTrailStatus(m, steps);
     const iconOrNum = st.state === 'unlocked' ? '✓' : String(m.id).padStart(2, '0');
+    const ratio = RIBBON_TRACK_RATIOS[idx];
+    const nodeLeftPct = 3 + ratio * 94;
+    const legSteps = m.steps - m.prevSteps;
     return `
-      <button type="button" class="checkpoint-node ${st.state}" data-milestone-id="${m.id}" id="ribbon-node-${m.id}" title="${m.name} (${formatNum(m.steps)} steps)">
+      <button
+        type="button"
+        class="checkpoint-node ${st.state}"
+        style="--node-left: ${nodeLeftPct.toFixed(2)}%"
+        data-milestone-id="${m.id}"
+        id="ribbon-node-${m.id}"
+        title="${m.name} — Target: ${formatNum(m.steps)} steps (+${formatNum(legSteps)} this leg)"
+      >
         <div class="node-circle">${iconOrNum}</div>
         <span class="node-city">${m.shortCity}</span>
         <span class="node-steps">${formatCompactSteps(m.steps)}</span>
+        <span class="node-leg">+${formatCompactSteps(legSteps)}</span>
       </button>
     `;
   }).join('');
