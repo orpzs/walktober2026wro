@@ -135,12 +135,12 @@
     },
     {
       "id": "evt-1790928840775-3uc3",
-      "timestamp": "2026-10-02T08:14:00.709Z",
+      "timestamp": "2026-10-01T20:00:00.000Z",
       "mode": "add",
       "delta": 87422,
       "previousSteps": 0,
       "newSteps": 87422,
-      "note": "Added +87,422 team steps",
+      "note": "Added +87,422 team steps (Oct 1)",
       "actor": "mokshazna"
     }
   ]
