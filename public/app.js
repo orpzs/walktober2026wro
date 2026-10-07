@@ -857,6 +857,338 @@ function renderLogbookAndPace() {
   }
 }
 
+function getEntryLocalDateStr(isoString) {
+  try {
+    const d = new Date(isoString);
+    return new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Europe/Warsaw',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }).format(d);
+  } catch {
+    return String(isoString).slice(0, 10);
+  }
+}
+
+function formatChartPill(n) {
+  if (n >= 1000000) {
+    return (n / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+  }
+  if (n >= 10000) {
+    return Math.round(n / 1000) + 'k';
+  }
+  if (n >= 1000) {
+    return (n / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
+  }
+  return String(n);
+}
+
+function renderDailyChart() {
+  const chartTrack = document.getElementById('daily-bars-track');
+  const statsRow = document.getElementById('daily-stats-row');
+  const inspPanel = document.getElementById('daily-day-inspector');
+  const btnDelta = document.getElementById('btn-chart-mode-delta');
+  const btnCum = document.getElementById('btn-chart-mode-cumulative');
+
+  if (!chartTrack) return;
+
+  const mode = appState.chartMode || 'delta';
+  if (btnDelta && btnCum) {
+    btnDelta.classList.toggle('active', mode === 'delta');
+    btnCum.classList.toggle('active', mode === 'cumulative');
+  }
+
+  const now = new Date();
+  const isOct = now.getMonth() === 9 && now.getFullYear() === 2026;
+  const currentDay = isOct ? Math.min(31, Math.max(1, now.getDate())) : 7;
+
+  // Group history entries by local date (Wrocław timezone)
+  const entriesByDate = new Map();
+  (appState.history || []).forEach((entry) => {
+    if (!entry.timestamp) return;
+    const dateStr = getEntryLocalDateStr(entry.timestamp);
+    if (!entriesByDate.has(dateStr)) {
+      entriesByDate.set(dateStr, []);
+    }
+    entriesByDate.get(dateStr).push(entry);
+  });
+
+  // Build 31 days data for October
+  const weekdayNames = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+  const fullWeekdayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const days = [];
+  let runningCumulative = 0;
+
+  for (let d = 1; d <= 31; d++) {
+    const dateKey = `2026-10-${String(d).padStart(2, '0')}`;
+    const dateObj = new Date(2026, 9, d, 12, 0, 0);
+    const dayOfWeek = dateObj.getDay();
+    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+    const isToday = d === currentDay;
+    const isPast = d < currentDay;
+    const isFuture = d > currentDay;
+
+    const dayEntries = entriesByDate.get(dateKey) || [];
+    // Sort entries on this day by timestamp ascending
+    dayEntries.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+    const delta = dayEntries.reduce((sum, h) => sum + (Number(h.delta) || 0), 0);
+
+    if (dayEntries.length > 0) {
+      const lastEntry = dayEntries[dayEntries.length - 1];
+      if (typeof lastEntry.newSteps === 'number') {
+        runningCumulative = lastEntry.newSteps;
+      } else {
+        runningCumulative += delta;
+      }
+    }
+
+    days.push({
+      dayNum: d,
+      dateKey,
+      dateObj,
+      weekday: weekdayNames[dayOfWeek],
+      fullWeekday: fullWeekdayNames[dayOfWeek],
+      isWeekend,
+      isToday,
+      isPast,
+      isFuture,
+      entries: dayEntries,
+      delta: Math.max(0, delta),
+      cumulativeSteps: d <= currentDay ? runningCumulative : 0
+    });
+  }
+
+  // Summary Metrics
+  const totalLogged = appState.liveTotalSteps || runningCumulative;
+  const activeDaysWithSteps = days.filter((d) => d.delta > 0).length;
+  const bestDay = days.reduce(
+    (best, d) => (d.delta > (best ? best.delta : 0) ? d : best),
+    null
+  );
+  const dailyAverage =
+    currentDay > 0 ? Math.round(totalLogged / Math.max(1, currentDay)) : 0;
+  const projectedTotal = Math.round(totalLogged + dailyAverage * (31 - currentDay));
+
+  if (statsRow) {
+    statsRow.innerHTML = `
+      <div class="daily-stat-box">
+        <span class="daily-stat-label">Total October Steps</span>
+        <div class="daily-stat-value mono-num">${formatNum(totalLogged)}</div>
+        <span class="daily-stat-sub">Across ${activeDaysWithSteps} logged expedition days</span>
+      </div>
+      <div class="daily-stat-box">
+        <span class="daily-stat-label">Expedition Progress</span>
+        <div class="daily-stat-value mono-num">Day ${currentDay} <span style="font-size: 0.95rem; font-weight: 500; color: var(--text-muted);">/ 31</span></div>
+        <span class="daily-stat-sub">${31 - currentDay} days remaining in October</span>
+      </div>
+      <div class="daily-stat-box">
+        <span class="daily-stat-label">Daily Team Average</span>
+        <div class="daily-stat-value mono-num">${formatNum(dailyAverage)}</div>
+        <span class="daily-stat-sub">team steps / active day</span>
+      </div>
+      <div class="daily-stat-box">
+        <span class="daily-stat-label">Single-Day Record</span>
+        <div class="daily-stat-value mono-num highlight-terracotta">
+          ${bestDay && bestDay.delta > 0 ? `+${formatChartPill(bestDay.delta)}` : '—'}
+        </div>
+        <span class="daily-stat-sub">${
+          bestDay && bestDay.delta > 0
+            ? `${bestDay.fullWeekday}, Oct ${bestDay.dayNum}`
+            : 'Awaiting logs'
+        }</span>
+      </div>
+      <div class="daily-stat-box">
+        <span class="daily-stat-label">Oct 31 Projected Total</span>
+        <div class="daily-stat-value mono-num" style="color: #1a73e8;">~${formatChartPill(projectedTotal)}</div>
+        <span class="daily-stat-sub">On track for Appalachian Trail!</span>
+      </div>
+    `;
+  }
+
+  // Selected Day: default to currentDay or day with latest steps
+  if (!appState.selectedChartDay) {
+    appState.selectedChartDay = currentDay;
+  }
+  const selectedDayObj =
+    days.find((d) => d.dayNum === appState.selectedChartDay) || days[currentDay - 1];
+
+  // Scaling
+  const maxDelta = Math.max(250000, ...days.map((d) => d.delta));
+  const maxCumulative = Math.max(1100000, totalLogged * 1.15);
+
+  // Render Average Line in Delta mode
+  const avgHeightPercent = Math.min(92, Math.round((dailyAverage / maxDelta) * 100));
+
+  let avgLineHtml = '';
+  if (mode === 'delta' && dailyAverage > 0) {
+    avgLineHtml = `
+      <div class="daily-avg-line" style="bottom: calc(38px + ${avgHeightPercent * 1.88}px);">
+        <span class="daily-avg-label">Avg: ~${formatChartPill(dailyAverage)}/day</span>
+      </div>
+    `;
+  }
+
+  // Build 31 bar columns
+  const barsHtml = days
+    .map((day) => {
+      const isSelected = selectedDayObj && day.dayNum === selectedDayObj.dayNum;
+      const isBest = bestDay && day.dayNum === bestDay.dayNum && bestDay.delta > 0;
+      let heightPercent = 0;
+      let valPillText = '';
+      let isTodayEmpty = false;
+
+      if (mode === 'delta') {
+        if (day.delta > 0) {
+          heightPercent = Math.max(8, Math.round((day.delta / maxDelta) * 100));
+          valPillText = `+${formatChartPill(day.delta)}`;
+        } else if (day.isToday) {
+          isTodayEmpty = true;
+          valPillText = 'Today';
+        }
+      } else {
+        // Cumulative mode
+        if (day.cumulativeSteps > 0) {
+          heightPercent = Math.max(6, Math.round((day.cumulativeSteps / maxCumulative) * 100));
+          valPillText = formatChartPill(day.cumulativeSteps);
+        } else if (day.isToday) {
+          isTodayEmpty = true;
+          valPillText = 'Today';
+        }
+      }
+
+      let topBadgeHtml = '';
+      if (isBest && mode === 'delta') {
+        topBadgeHtml = `<span class="daily-bar-badge-top badge-top-best" title="Single-Day Record">🏆</span>`;
+      } else if (day.isToday) {
+        topBadgeHtml = `<span class="daily-bar-badge-top badge-top-today" title="Today in Wrocław">📍</span>`;
+      }
+
+      const colClasses = [
+        'daily-bar-col',
+        isSelected ? 'selected' : '',
+        isBest && mode === 'delta' ? 'best-day' : '',
+        day.isToday ? 'is-today' : '',
+        isTodayEmpty ? 'is-today-empty' : '',
+        day.isFuture ? 'is-future' : '',
+        day.isWeekend ? 'is-weekend' : '',
+        mode === 'cumulative' ? 'is-cumulative' : ''
+      ]
+        .filter(Boolean)
+        .join(' ');
+
+      return `
+        <div class="${colClasses}" data-day="${day.dayNum}" tabindex="0" role="button" aria-label="October ${day.dayNum}: ${formatNum(day.delta)} steps">
+          ${topBadgeHtml}
+          <span class="daily-bar-val-pill mono-num">${valPillText}</span>
+          <div class="daily-bar-slot">
+            <div class="daily-bar-fill" style="height: ${heightPercent}%"></div>
+          </div>
+          <div class="daily-bar-footer">
+            <span class="daily-bar-daynum mono-num">${day.dayNum}</span>
+            <span class="daily-bar-weekday">${day.weekday}</span>
+          </div>
+        </div>
+      `;
+    })
+    .join('');
+
+  chartTrack.innerHTML = avgLineHtml + barsHtml;
+
+  // Add click handlers for bars
+  chartTrack.querySelectorAll('.daily-bar-col').forEach((col) => {
+    col.addEventListener('click', () => {
+      const dayNum = Number(col.getAttribute('data-day'));
+      if (dayNum) {
+        appState.selectedChartDay = dayNum;
+        renderDailyChart();
+      }
+    });
+  });
+
+  // Render Inspector Panel for selectedDayObj
+  if (inspPanel && selectedDayObj) {
+    const isSelectedBest = bestDay && selectedDayObj.dayNum === bestDay.dayNum && bestDay.delta > 0;
+    const diffFromAvg = selectedDayObj.delta - dailyAverage;
+    const diffAvgLabel =
+      selectedDayObj.delta === 0
+        ? ''
+        : diffFromAvg >= 0
+          ? `<span style="color: #137333; font-weight: 700;">+${formatNum(diffFromAvg)} above avg</span>`
+          : `<span style="color: var(--text-muted); font-weight: 600;">-${formatNum(Math.abs(diffFromAvg))} below avg</span>`;
+
+    let statusPill = '📅 October Day';
+    if (selectedDayObj.isToday) statusPill = '📍 Today (October 7)';
+    else if (isSelectedBest) statusPill = '🏆 Top Team Day';
+    else if (selectedDayObj.isFuture) statusPill = '⏳ Upcoming Expedition Day';
+    else if (selectedDayObj.delta > 0) statusPill = '✓ Logged Team Steps';
+
+    const trailAtDay = getActiveOrLastMilestone(selectedDayObj.cumulativeSteps || totalLogged);
+
+    inspPanel.innerHTML = `
+      <div class="daily-insp-left">
+        <div class="daily-insp-badge">
+          ${statusPill}
+        </div>
+        <div>
+          <div class="daily-insp-title">
+            ${selectedDayObj.fullWeekday}, October ${selectedDayObj.dayNum}, 2026
+          </div>
+          <div class="daily-insp-subtitle">
+            ${
+              selectedDayObj.delta > 0
+                ? `The Wroogle Company contributed <strong>+${formatNum(selectedDayObj.delta)} steps</strong> to the global expedition.`
+                : selectedDayObj.isToday
+                  ? `Today's expedition leg is underway in Wrocław! Lace up and log steps.`
+                  : selectedDayObj.isFuture
+                    ? `Upcoming day ${selectedDayObj.dayNum} of the 31-day October challenge.`
+                    : `No step entries recorded on this day.`
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="daily-insp-stats">
+        <div class="daily-insp-stat-item">
+          <span class="daily-insp-stat-label">Daily Delta Walked</span>
+          <span class="daily-insp-stat-val mono-num">
+            ${selectedDayObj.delta > 0 ? `+${formatNum(selectedDayObj.delta)}` : '0'}
+          </span>
+          <span style="font-size: 0.75rem;">${diffAvgLabel}</span>
+        </div>
+        <div class="daily-insp-stat-item">
+          <span class="daily-insp-stat-label">Cumulative Total by End of Day</span>
+          <span class="daily-insp-stat-val mono-num" style="color: var(--accent-terracotta);">
+            ${selectedDayObj.cumulativeSteps > 0 ? formatNum(selectedDayObj.cumulativeSteps) : '—'}
+          </span>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">${trailAtDay.name}</span>
+        </div>
+        ${
+          appState.auth && appState.auth.isAdmin
+            ? `
+              <button type="button" class="daily-insp-action-btn" id="btn-quick-log-day" data-date="${selectedDayObj.dateKey}">
+                + Log Steps For Oct ${selectedDayObj.dayNum}
+              </button>
+            `
+            : ''
+        }
+      </div>
+    `;
+
+    const quickLogBtn = inspPanel.querySelector('#btn-quick-log-day');
+    if (quickLogBtn) {
+      quickLogBtn.addEventListener('click', () => {
+        const targetDate = quickLogBtn.getAttribute('data-date');
+        openAdminModal();
+        const dateInput = document.getElementById('admin-date-input');
+        if (dateInput) {
+          dateInput.value = targetDate;
+        }
+      });
+    }
+  }
+}
+
 function renderTeamRoster() {
   const members = Array.isArray(appState.members) ? appState.members : [];
   const countPill = document.getElementById('roster-count-pill');
@@ -960,6 +1292,7 @@ function renderAll() {
   renderTeamRoster();
   renderWorldMapAndInspector();
   renderMilestoneCards();
+  renderDailyChart();
   renderLogbookAndPace();
   updateAdminPreviewTotal();
 }
@@ -1072,6 +1405,13 @@ function openAdminModal() {
   if (dispatchInput) {
     dispatchInput.value = appState.teamMessage;
   }
+  const dateInput = document.getElementById('admin-date-input');
+  if (dateInput && !dateInput.value) {
+    const now = new Date();
+    const isOct = now.getMonth() === 9 && now.getFullYear() === 2026;
+    const d = isOct ? now.getDate() : 7;
+    dateInput.value = `2026-10-${String(d).padStart(2, '0')}`;
+  }
   updateAdminPreviewTotal();
 }
 
@@ -1080,6 +1420,20 @@ function closeAdminModal() {
 }
 
 function bindEvents() {
+  // Chart Mode Toggles (Delta vs Cumulative)
+  const btnChartDelta = document.getElementById('btn-chart-mode-delta');
+  const btnChartCum = document.getElementById('btn-chart-mode-cumulative');
+  if (btnChartDelta && btnChartCum) {
+    btnChartDelta.addEventListener('click', () => {
+      appState.chartMode = 'delta';
+      renderDailyChart();
+    });
+    btnChartCum.addEventListener('click', () => {
+      appState.chartMode = 'cumulative';
+      renderDailyChart();
+    });
+  }
+
   // Simulator Slider
   const simSlider = document.getElementById('trail-simulator-slider');
   simSlider.addEventListener('input', (e) => {
@@ -1222,6 +1576,8 @@ function bindEvents() {
   document.getElementById('step-update-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const rawSteps = Number(stepsInput.value);
+    const dateInput = document.getElementById('admin-date-input');
+    const date = dateInput ? dateInput.value.trim() : '';
     const note = document.getElementById('admin-note-input').value.trim();
     const teamMessage = document.getElementById('admin-dispatch-input').value.trim();
     const feedback = document.getElementById('admin-form-feedback');
@@ -1234,6 +1590,7 @@ function bindEvents() {
         body: JSON.stringify({
           mode: appState.adminMode,
           steps: rawSteps,
+          date,
           note,
           teamMessage
         })

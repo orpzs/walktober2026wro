@@ -412,7 +412,11 @@ const server = http.createServer(async (req, res) => {
       const previousSteps = state.totalSteps;
       const newSteps = mode === 'set' ? stepsInput : previousSteps + stepsInput;
       const delta = newSteps - previousSteps;
-      const nowIso = new Date().toISOString();
+      let nowIso = new Date().toISOString();
+      if (typeof body.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(body.date.trim())) {
+        const timePart = nowIso.split('T')[1] || '12:00:00.000Z';
+        nowIso = `${body.date.trim()}T${timePart}`;
+      }
       const note =
         typeof body.note === 'string' && body.note.trim()
           ? body.note.trim().slice(0, 240)
@@ -436,6 +440,10 @@ const server = http.createServer(async (req, res) => {
           ? body.teamMessage.trim().slice(0, 400)
           : state.teamMessage;
 
+      const combinedHistory = [entry, ...state.history].sort(
+        (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+      );
+
       const updatedState = writeState({
         totalSteps: newSteps,
         updatedAt: nowIso,
@@ -443,7 +451,7 @@ const server = http.createServer(async (req, res) => {
         teamMessage: nextTeamMessage,
         members: state.members,
         visitors: state.visitors,
-        history: [entry, ...state.history]
+        history: combinedHistory
       });
 
       return sendJson(res, 200, { ...updatedState, auth });

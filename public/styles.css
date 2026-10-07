@@ -2417,9 +2417,434 @@ body {
   .checkpoint-ribbon-line-bg,
   .checkpoint-ribbon-line-fill,
   .ribbon-hiker-avatar,
-  .ribbon-final-stretch-tag {
-    display: none;
-  }
+/* ========================================================
+   OCTOBER 31-DAY STEP ACCUMULATION & DELTA CHART
+   ======================================================== */
+
+.daily-chart-section {
+  padding: 36px 0 20px;
+}
+
+.daily-chart-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-warm);
+  border-radius: var(--radius-lg);
+  padding: 32px 32px 28px;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.daily-chart-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #34a853 0%, #4285f4 35%, #ea4335 70%, #fbbc05 100%);
+}
+
+.daily-chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.daily-chart-title-wrap {
+  max-width: 680px;
+}
+
+.daily-chart-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-body);
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
+.daily-chart-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.chart-view-toggle {
+  display: inline-flex;
+  background: var(--bg-sand);
+  padding: 4px;
+  border-radius: 999px;
+  border: 1px solid var(--border-warm);
+}
+
+.chart-toggle-btn {
+  background: transparent;
+  border: none;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  font-family: inherit;
+}
+
+.chart-toggle-btn:hover {
+  color: var(--text-ink);
+}
+
+.chart-toggle-btn.active {
+  background: #ffffff;
+  color: var(--bg-forest-deep);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* Quick Summary Stat Cards */
+.daily-stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.daily-stat-box {
+  background: var(--bg-sand-subtle);
+  border: 1px solid var(--border-warm);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.daily-stat-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.daily-stat-value {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--bg-forest-deep);
+  line-height: 1.2;
+}
+
+.daily-stat-sub {
+  font-size: 0.78rem;
+  color: var(--text-body);
+}
+
+/* 31-Bar Visual Chart Track */
+.daily-bars-container {
+  position: relative;
+  background: #ffffff;
+  border: 1px solid var(--border-warm);
+  border-radius: var(--radius-md);
+  padding: 32px 16px 16px;
+  margin-bottom: 22px;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.02);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.daily-bars-track {
+  display: grid;
+  grid-template-columns: repeat(31, minmax(24px, 1fr));
+  gap: 6px;
+  min-width: 820px;
+  height: 250px;
+  position: relative;
+  align-items: flex-end;
+  padding-bottom: 38px;
+  padding-top: 24px;
+}
+
+/* Horizontal Average Line */
+.daily-avg-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 2px dashed rgba(26, 58, 45, 0.35);
+  pointer-events: none;
+  z-index: 2;
+  transition: bottom 0.3s ease;
+}
+
+.daily-avg-label {
+  position: absolute;
+  right: 4px;
+  top: -20px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--bg-forest-mid);
+  background: var(--bg-sand);
+  padding: 2px 7px;
+  border-radius: 4px;
+  border: 1px solid var(--border-warm);
+  letter-spacing: 0.02em;
+}
+
+/* Individual Day Bar Column */
+.daily-bar-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  position: relative;
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 2px 1px;
+  transition: all 0.18s ease;
+}
+
+.daily-bar-col:hover {
+  background: rgba(45, 90, 67, 0.06);
+}
+
+.daily-bar-col.selected {
+  background: rgba(45, 90, 67, 0.12);
+  outline: 2px solid var(--accent-forest);
+}
+
+.daily-bar-badge-top {
+  position: absolute;
+  top: -22px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 4px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.badge-top-best {
+  background: #fef08a;
+  color: #854d0e;
+  border: 1px solid #facc15;
+}
+
+.badge-top-today {
+  background: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #93c5fd;
+  animation: pulse-badge 2s infinite;
+}
+
+@keyframes pulse-badge {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+.daily-bar-val-pill {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+  white-space: nowrap;
+  letter-spacing: -0.02em;
+  transition: all 0.15s ease;
+}
+
+.daily-bar-col:hover .daily-bar-val-pill,
+.daily-bar-col.selected .daily-bar-val-pill {
+  color: var(--bg-forest-deep);
+  font-weight: 800;
+  transform: translateY(-2px);
+}
+
+.daily-bar-slot {
+  width: 100%;
+  max-width: 24px;
+  height: calc(100% - 24px);
+  background: rgba(20, 41, 32, 0.04);
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(20, 41, 32, 0.06);
+}
+
+.daily-bar-fill {
+  width: 100%;
+  background: linear-gradient(180deg, #34a853 0%, #1a3a2d 100%);
+  border-radius: 4px 4px 0 0;
+  transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease;
+  position: relative;
+}
+
+.daily-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 4px 4px 0 0;
+}
+
+.daily-bar-col.best-day .daily-bar-fill {
+  background: linear-gradient(180deg, #ea4335 0%, #c85a32 100%);
+}
+
+.daily-bar-col.is-cumulative .daily-bar-fill {
+  background: linear-gradient(180deg, #4285f4 0%, #1a3a2d 100%);
+}
+
+/* Today style when zero / awaiting */
+.daily-bar-col.is-today-empty .daily-bar-slot {
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(66, 133, 244, 0.06),
+    rgba(66, 133, 244, 0.06) 6px,
+    rgba(66, 133, 244, 0.12) 6px,
+    rgba(66, 133, 244, 0.12) 12px
+  );
+  border: 1.5px dashed #4285f4;
+}
+
+/* Future days */
+.daily-bar-col.is-future .daily-bar-slot {
+  background: transparent;
+  border: 1px dashed rgba(20, 41, 32, 0.15);
+}
+
+.daily-bar-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+
+.daily-bar-daynum {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-ink);
+}
+
+.daily-bar-col.is-today .daily-bar-daynum {
+  background: #1a73e8;
+  color: #ffffff;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.68rem;
+}
+
+.daily-bar-weekday {
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.daily-bar-col.is-weekend .daily-bar-weekday {
+  color: var(--accent-terracotta);
+  font-weight: 700;
+}
+
+/* Selected Day Details Panel */
+.daily-day-inspector {
+  background: var(--bg-sand-subtle);
+  border: 1px solid var(--border-warm);
+  border-radius: var(--radius-md);
+  padding: 18px 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.daily-insp-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.daily-insp-badge {
+  background: var(--bg-forest-deep);
+  color: #ffffff;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.daily-insp-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-ink);
+  line-height: 1.3;
+}
+
+.daily-insp-subtitle {
+  font-size: 0.82rem;
+  color: var(--text-body);
+  margin-top: 2px;
+}
+
+.daily-insp-stats {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.daily-insp-stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.daily-insp-stat-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.daily-insp-stat-val {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--bg-forest-deep);
+}
+
+.daily-insp-action-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border-strong);
+  color: var(--text-ink);
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.daily-insp-action-btn:hover {
+  background: #ffffff;
+  border-color: var(--accent-forest);
+  color: var(--accent-forest);
 }
 
 @media (max-width: 768px) {

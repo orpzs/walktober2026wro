@@ -1,6 +1,6 @@
 {
-  "totalSteps": 400289,
-  "updatedAt": "2026-10-03T20:58:04.815Z",
+  "totalSteps": 882149,
+  "updatedAt": "2026-10-06T19:02:24.416Z",
   "updatedBy": "mokshazna",
   "teamMessage": "Welcome to Walktober 2026, Wrooglers! Lace up in Wrocław and let's conquer all 10 world trails together!",
   "members": [
@@ -18,26 +18,101 @@
     "Ewa Owczarewicz",
     "Mohamed Abdalhamid",
     "Iwona Chmielik",
-    "Paweł Tokarski"
+    "Paweł Tokarski",
+    "Łukasz Choczaj",
+    "Adrianna Łapucha",
+    "Andrea Rangel",
+    "Aniuta Kash",
+    "Tomasz Król"
   ],
   "visitors": [
     {
       "ldap": "mokshazna",
-      "lastSeen": "2026-10-04T11:58:12.282Z",
+      "lastSeen": "2026-10-07T06:17:10.353Z",
+      "visits": 16
+    },
+    {
+      "ldap": "ptokarski",
+      "lastSeen": "2026-10-06T21:13:39.699Z",
       "visits": 5
+    },
+    {
+      "ldap": "kozakm",
+      "lastSeen": "2026-10-06T10:24:16.122Z",
+      "visits": 1
+    },
+    {
+      "ldap": "pjozefowicz",
+      "lastSeen": "2026-10-06T06:28:09.389Z",
+      "visits": 2
+    },
+    {
+      "ldap": "andrearangel",
+      "lastSeen": "2026-10-05T11:44:05.098Z",
+      "visits": 1
+    },
+    {
+      "ldap": "mchaika",
+      "lastSeen": "2026-10-05T11:18:26.604Z",
+      "visits": 1
+    },
+    {
+      "ldap": "pawelglica",
+      "lastSeen": "2026-10-05T10:48:50.525Z",
+      "visits": 1
+    },
+    {
+      "ldap": "iwonach",
+      "lastSeen": "2026-10-05T08:11:46.817Z",
+      "visits": 1
+    },
+    {
+      "ldap": "lukaszchoczaj",
+      "lastSeen": "2026-10-05T07:04:58.513Z",
+      "visits": 2
+    },
+    {
+      "ldap": "nschoepl",
+      "lastSeen": "2026-10-04T16:40:46.959Z",
+      "visits": 1
     },
     {
       "ldap": "malshafaey",
       "lastSeen": "2026-10-03T23:26:02.768Z",
       "visits": 1
-    },
-    {
-      "ldap": "ptokarski",
-      "lastSeen": "2026-10-02T13:57:24.208Z",
-      "visits": 1
     }
   ],
   "history": [
+    {
+      "id": "evt-1791313344416-jsp7",
+      "timestamp": "2026-10-06T19:02:24.416Z",
+      "mode": "set",
+      "delta": 126103,
+      "previousSteps": 756046,
+      "newSteps": 882149,
+      "note": "Updated total team steps to 882,149",
+      "actor": "mokshazna"
+    },
+    {
+      "id": "evt-1791230493385-btxy",
+      "timestamp": "2026-10-05T20:01:33.384Z",
+      "mode": "set",
+      "delta": 126042,
+      "previousSteps": 630004,
+      "newSteps": 756046,
+      "note": "Updated total team steps to 756,046",
+      "actor": "mokshazna"
+    },
+    {
+      "id": "evt-1791147261009-8zjs",
+      "timestamp": "2026-10-04T20:54:20.908Z",
+      "mode": "set",
+      "delta": 229715,
+      "previousSteps": 400289,
+      "newSteps": 630004,
+      "note": "Updated total team steps to 630,004",
+      "actor": "mokshazna"
+    },
     {
       "id": "evt-1791061084913-fbd6",
       "timestamp": "2026-10-03T20:58:04.815Z",
