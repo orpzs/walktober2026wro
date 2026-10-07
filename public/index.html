@@ -200,6 +200,48 @@
           </div>
         </div>
 
+        <!-- October Daily Steps & Cumulative Rhythm (31-Day Expedition Bar Chart) -->
+        <div class="daily-chart-card" id="daily-chart-card">
+          <div class="daily-chart-header">
+            <div class="daily-chart-title-wrap">
+              <span class="section-eyebrow">OCTOBER 1–31 EXPEDITION RHYTHM</span>
+              <h2 class="subsection-title">Daily Team Steps & Cumulative Progress</h2>
+              <p class="daily-chart-subtitle">
+                Track our 31-day walking rhythm across October. Each bar shows that day's delta contribution to The Wroogle Company's world trek. Click or hover any day to inspect.
+              </p>
+            </div>
+            
+            <div class="daily-chart-controls">
+              <!-- Mode Toggle Buttons -->
+              <div class="chart-view-toggle" role="radiogroup" aria-label="Chart display view">
+                <button type="button" class="chart-toggle-btn active" data-chart-mode="delta" id="btn-chart-mode-delta">
+                  📊 Daily Delta (Steps / Day)
+                </button>
+                <button type="button" class="chart-toggle-btn" data-chart-mode="cumulative" id="btn-chart-mode-cumulative">
+                  📈 Cumulative Growth
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Summary Stat Cards -->
+          <div class="daily-stats-row" id="daily-stats-row">
+            <!-- Populated dynamically by app.js -->
+          </div>
+
+          <!-- 31-Bar Visual Chart Track Container -->
+          <div class="daily-bars-container">
+            <div class="daily-bars-track" id="daily-bars-track" role="region" aria-label="31-day step chart for October 2026">
+              <!-- 31 bar columns populated dynamically by app.js -->
+            </div>
+          </div>
+
+          <!-- Selected Day Inspection Details Panel -->
+          <div class="daily-day-inspector" id="daily-day-inspector">
+            <!-- Populated dynamically by app.js -->
+          </div>
+        </div>
+
         <!-- 10-Checkpoint Horizontal Expedition Progress Ribbon -->
         <div class="ribbon-card">
           <div class="ribbon-header">
@@ -462,52 +504,6 @@
         <!-- Winding Trail Cards Container -->
         <div class="milestones-trail-grid" id="milestones-trail-grid">
           <!-- Populated dynamically by app.js -->
-        </div>
-      </div>
-    </section>
-
-    <!-- October Daily Steps & Cumulative Rhythm (31-Day Expedition Bar Chart) -->
-    <section class="daily-chart-section" id="daily-chart-section">
-      <div class="container">
-        <div class="daily-chart-card">
-          <div class="daily-chart-header">
-            <div class="daily-chart-title-wrap">
-              <span class="section-eyebrow">OCTOBER 1–31 EXPEDITION RHYTHM</span>
-              <h2 class="subsection-title">Daily Team Steps & Cumulative Progress</h2>
-              <p class="daily-chart-subtitle">
-                Track our 31-day walking rhythm across October. Each bar shows that day's delta contribution to The Wroogle Company's world trek. Click or hover any day to inspect.
-              </p>
-            </div>
-            
-            <div class="daily-chart-controls">
-              <!-- Mode Toggle Buttons -->
-              <div class="chart-view-toggle" role="radiogroup" aria-label="Chart display view">
-                <button type="button" class="chart-toggle-btn active" data-chart-mode="delta" id="btn-chart-mode-delta">
-                  📊 Daily Delta (Steps / Day)
-                </button>
-                <button type="button" class="chart-toggle-btn" data-chart-mode="cumulative" id="btn-chart-mode-cumulative">
-                  📈 Cumulative Growth
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Quick Summary Stat Cards -->
-          <div class="daily-stats-row" id="daily-stats-row">
-            <!-- Populated dynamically by app.js -->
-          </div>
-
-          <!-- 31-Bar Visual Chart Track Container -->
-          <div class="daily-bars-container">
-            <div class="daily-bars-track" id="daily-bars-track" role="region" aria-label="31-day step chart for October 2026">
-              <!-- 31 bar columns populated dynamically by app.js -->
-            </div>
-          </div>
-
-          <!-- Selected Day Inspection Details Panel -->
-          <div class="daily-day-inspector" id="daily-day-inspector">
-            <!-- Populated dynamically by app.js -->
-          </div>
         </div>
       </div>
     </section>

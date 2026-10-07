@@ -2417,6 +2417,11 @@ body {
   .checkpoint-ribbon-line-bg,
   .checkpoint-ribbon-line-fill,
   .ribbon-hiker-avatar,
+  .ribbon-final-stretch-tag {
+    display: none;
+  }
+}
+
 /* ========================================================
    OCTOBER 31-DAY STEP ACCUMULATION & DELTA CHART
    ======================================================== */
@@ -2433,6 +2438,7 @@ body {
   box-shadow: var(--shadow-md);
   position: relative;
   overflow: hidden;
+  margin-bottom: 24px;
 }
 
 .daily-chart-card::before {
