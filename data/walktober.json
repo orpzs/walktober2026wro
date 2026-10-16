@@ -1,6 +1,6 @@
 {
-  "totalSteps": 882149,
-  "updatedAt": "2026-10-06T19:02:24.416Z",
+  "totalSteps": 2938007,
+  "updatedAt": "2026-10-16T20:17:24.812Z",
   "updatedBy": "mokshazna",
   "teamMessage": "Welcome to Walktober 2026, Wrooglers! Lace up in Wrocław and let's conquer all 10 world trails together!",
   "members": [
@@ -23,13 +23,96 @@
     "Adrianna Łapucha",
     "Andrea Rangel",
     "Aniuta Kash",
-    "Tomasz Król"
+    "Tomasz Król",
+    "Thangaraju Rajasekaran",
+    "Piotr Giziński",
+    "Alicja Geroudet"
   ],
   "visitors": [
     {
       "ldap": "mokshazna",
-      "lastSeen": "2026-10-07T06:17:10.353Z",
-      "visits": 16
+      "lastSeen": "2026-10-16T06:48:22.031Z",
+      "visits": 29
+    },
+    {
+      "ldap": "dawidm",
+      "lastSeen": "2026-10-15T07:32:42.252Z",
+      "visits": 5
+    },
+    {
+      "ldap": "pawelglica",
+      "lastSeen": "2026-10-13T09:15:33.125Z",
+      "visits": 3
+    },
+    {
+      "ldap": "aniutak",
+      "lastSeen": "2026-10-09T14:50:50.784Z",
+      "visits": 1
+    },
+    {
+      "ldap": "tkrol",
+      "lastSeen": "2026-10-09T06:48:49.007Z",
+      "visits": 2
+    },
+    {
+      "ldap": "pjozefowicz",
+      "lastSeen": "2026-10-09T05:58:23.556Z",
+      "visits": 4
+    },
+    {
+      "ldap": "mgaluszek",
+      "lastSeen": "2026-10-08T13:12:22.309Z",
+      "visits": 1
+    },
+    {
+      "ldap": "alicjag",
+      "lastSeen": "2026-10-08T11:29:47.631Z",
+      "visits": 1
+    },
+    {
+      "ldap": "huru",
+      "lastSeen": "2026-10-08T08:35:39.931Z",
+      "visits": 1
+    },
+    {
+      "ldap": "pwdtr",
+      "lastSeen": "2026-10-08T07:22:35.143Z",
+      "visits": 1
+    },
+    {
+      "ldap": "wmarcin",
+      "lastSeen": "2026-10-08T07:20:44.450Z",
+      "visits": 1
+    },
+    {
+      "ldap": "thanga",
+      "lastSeen": "2026-10-07T18:31:48.900Z",
+      "visits": 2
+    },
+    {
+      "ldap": "jeromerajan",
+      "lastSeen": "2026-10-07T11:25:38.454Z",
+      "visits": 1
+    },
+    {
+      "ldap": "iwonach",
+      "lastSeen": "2026-10-07T09:26:15.232Z",
+      "visits": 2
+    },
+    {
+      "ldap": "jacekkubiak",
+      "lastSeen": "2026-10-07T09:25:49.869Z",
+      "visits": 1
+    },
+    {
+      "ldap": "piotrgizinski",
+      "lastSeen": "2026-10-07T09:07:25.553Z",
+      "visits": 1
+    },
+    {
+      "ldap": "ejglopez",
+      "lastSeen": "2026-10-07T09:07:10.943Z",
+      "visits": 1
     },
     {
       "ldap": "ptokarski",
@@ -42,11 +125,6 @@
       "visits": 1
     },
     {
-      "ldap": "pjozefowicz",
-      "lastSeen": "2026-10-06T06:28:09.389Z",
-      "visits": 2
-    },
-    {
       "ldap": "andrearangel",
       "lastSeen": "2026-10-05T11:44:05.098Z",
       "visits": 1
@@ -54,16 +132,6 @@
     {
       "ldap": "mchaika",
       "lastSeen": "2026-10-05T11:18:26.604Z",
-      "visits": 1
-    },
-    {
-      "ldap": "pawelglica",
-      "lastSeen": "2026-10-05T10:48:50.525Z",
-      "visits": 1
-    },
-    {
-      "ldap": "iwonach",
-      "lastSeen": "2026-10-05T08:11:46.817Z",
       "visits": 1
     },
     {
@@ -83,6 +151,106 @@
     }
   ],
   "history": [
+    {
+      "id": "evt-1792181844859-2a6m",
+      "timestamp": "2026-10-16T20:17:24.812Z",
+      "mode": "set",
+      "delta": 211690,
+      "previousSteps": 2726317,
+      "newSteps": 2938007,
+      "note": "Updated total team steps to 2,938,007",
+      "actor": "mokshazna"
+    },
+    {
+      "id": "evt-1792133314479-kc9v",
+      "timestamp": "2026-10-15T06:48:34.440Z",
+      "mode": "set",
+      "delta": 159829,
+      "previousSteps": 2566488,
+      "newSteps": 2726317,
+      "note": "Updated total team steps to 2,726,317",
+      "actor": "mokshazna"
+    },
+    {
+      "id": "evt-1792007115487-jd0u",
+      "timestamp": "2026-10-14T19:45:15.487Z",
+      "mode": "set",
+      "delta": 143666,
+      "previousSteps": 2422822,
+      "newSteps": 2566488,
+      "note": "Updated total team steps to 2,566,488",
+      "actor": "mokshazna"
+    },
+    {
+      "id": "evt-1791958875849-i2a9",
+      "timestamp": "2026-10-13T06:21:15.849Z",
+      "mode": "set",
+      "delta": 294497,
+      "previousSteps": 2128325,
+      "newSteps": 2422822,
+      "note": "Updated total team steps to 2,422,822",
+      "actor": "mokshazna"
+    },
+    {
+      "id": "evt-1791872752578-zkfd",
+      "timestamp": "2026-10-12T06:25:52.578Z",
+      "mode": "set",
+      "delta": 224880,
+      "previousSteps": 1903445,
+      "newSteps": 2128325,
+      "note": "Updated total team steps to 2,128,325",
+      "actor": "mokshazna"
+    },
+    {
+      "id": "evt-1791745965247-0zxx",
+      "timestamp": "2026-10-11T19:12:45.246Z",
+      "mode": "set",
+      "delta": 170265,
+      "previousSteps": 1733180,
+      "newSteps": 1903445,
+      "note": "Updated total team steps to 1,903,445",
+      "actor": "mokshazna"
+    },
+    {
+      "id": "evt-1791662401562-vcbf",
+      "timestamp": "2026-10-10T20:00:01.467Z",
+      "mode": "set",
+      "delta": 135603,
+      "previousSteps": 1597577,
+      "newSteps": 1733180,
+      "note": "Updated total team steps to 1,733,180",
+      "actor": "mokshazna"
+    },
+    {
+      "id": "evt-1791575682646-ujlr",
+      "timestamp": "2026-10-09T19:54:42.646Z",
+      "mode": "set",
+      "delta": 260092,
+      "previousSteps": 1337485,
+      "newSteps": 1597577,
+      "note": "Updated total team steps to 1,597,577",
+      "actor": "mokshazna"
+    },
+    {
+      "id": "evt-1791492175282-x3lb",
+      "timestamp": "2026-10-08T20:42:55.282Z",
+      "mode": "set",
+      "delta": 275600,
+      "previousSteps": 1061885,
+      "newSteps": 1337485,
+      "note": "Updated total team steps to 1,337,485",
+      "actor": "mokshazna"
+    },
+    {
+      "id": "evt-1791441194277-xqa2",
+      "timestamp": "2026-10-07T06:33:14.182Z",
+      "mode": "set",
+      "delta": 179736,
+      "previousSteps": 882149,
+      "newSteps": 1061885,
+      "note": "Updated total team steps to 1,061,885",
+      "actor": "mokshazna"
+    },
     {
       "id": "evt-1791313344416-jsp7",
       "timestamp": "2026-10-06T19:02:24.416Z",

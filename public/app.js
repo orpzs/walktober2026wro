@@ -401,18 +401,26 @@ function renderHeroSection() {
     legRemainingEl.innerHTML = `<strong>${formatNum(status.remainingToUnlock)} steps</strong> to unlock ${currentMilestone.shortCity}`;
   }
 
-  // Fun Wrocław & Global Conversion Metrics
+  // Fun Global & Space Conversion Metrics
   const unlockedCount = MILESTONES.filter((m) => steps >= m.steps).length;
-  const kmWalked = (steps * 0.000762).toFixed(1);
-  // Wrocław Market Square (Rynek) perimeter is approx 680 meters (0.68 km)
-  const rynekLaps = ((steps * 0.000762) / 0.68).toFixed(1);
-  // Roughly 1 Wrocław Krasnal spotted every 640 steps along the city trail
-  const krasnaleSpotted = Math.floor(steps / 640);
+  const kmNum = steps * 0.000762;
+  const kmWalked = kmNum.toFixed(1);
+  // 1 Full Marathon = 42.195 km
+  const fullMarathons = (kmNum / 42.195).toFixed(1);
+  // ISS orbits ~408 km above Earth -> 816 km round trip to outer space and back
+  const issRoundTrips = (kmNum / 816).toFixed(2);
+  // Mount Everest height = 8.849 km
+  const everestsStacked = (kmNum / 8.849).toFixed(0);
 
   document.getElementById('metric-unlocked-count').textContent = `${unlockedCount} / 10`;
   document.getElementById('metric-km-walked').textContent = `${Number(kmWalked).toLocaleString('en-US')} km`;
-  document.getElementById('metric-rynek-laps').textContent = `${Number(rynekLaps).toLocaleString('en-US')} laps`;
-  document.getElementById('metric-krasnale-spotted').textContent = formatNum(krasnaleSpotted);
+  document.getElementById('metric-rynek-laps').textContent = `${Number(fullMarathons).toLocaleString('en-US')}`;
+  document.getElementById('metric-krasnale-spotted').textContent = `${issRoundTrips}x`;
+
+  const tipEl = document.getElementById('wroclaw-tip-text');
+  if (tipEl && steps > 0) {
+    tipEl.innerHTML = `Our <strong>${Number(kmWalked).toLocaleString('en-US')} km</strong> walked equals stacking <strong>🏔️ ${Number(everestsStacked).toLocaleString('en-US')} Mount Everests</strong> (8.85 km high), running <strong>🏅 ${fullMarathons} full marathons</strong>, or trekking overland from <strong>✈️ Wrocław all the way past Rome &amp; Barcelona</strong>!`;
+  }
 
   // Right Column Spotlight Card
   document.getElementById('spotlight-status-label').textContent = allCompleted
