@@ -401,6 +401,8 @@ function renderHeroSection() {
     legRemainingEl.innerHTML = `<strong>${formatNum(status.remainingToUnlock)} steps</strong> to unlock ${currentMilestone.shortCity}`;
   }
 
+  renderChampionsCupBanner(steps, allCompleted);
+
   // Fun Global & Space Conversion Metrics
   const unlockedCount = MILESTONES.filter((m) => steps >= m.steps).length;
   const kmNum = steps * 0.000762;
@@ -450,6 +452,163 @@ function renderHeroSection() {
   document.getElementById('spotlight-needed-steps').textContent = allCompleted
     ? 'Completed! 🎉'
     : `${formatNum(status.remainingToUnlock)} steps`;
+}
+
+function triggerWalkerSprinkleBurst(containerEl, count = 14) {
+  if (!containerEl) return;
+  containerEl.innerHTML = '';
+  const colors = ['#facc15', '#34a853', '#ea4335', '#4285f4', '#fb923c', '#fde047', '#ffffff'];
+  const shapes = ['✨', '🌟', '🎉', '•', '✦', '★'];
+
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('span');
+    p.className = 'sprinkle-particle';
+    const isSymbol = i % 3 === 0;
+    if (isSymbol) {
+      p.textContent = shapes[i % shapes.length];
+      p.classList.add('sprinkle-symbol');
+    } else {
+      p.style.backgroundColor = colors[i % colors.length];
+    }
+    const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.4;
+    const dist = 36 + Math.random() * 58;
+    const dx = Math.cos(angle) * dist;
+    const dy = Math.sin(angle) * dist - 10;
+    const rot = Math.round((Math.random() - 0.5) * 320);
+    p.style.setProperty('--dx', `${dx.toFixed(1)}px`);
+    p.style.setProperty('--dy', `${dy.toFixed(1)}px`);
+    p.style.setProperty('--rot', `${rot}deg`);
+    p.style.left = `${45 + (Math.random() - 0.5) * 30}%`;
+    p.style.top = `${45 + (Math.random() - 0.5) * 24}%`;
+    containerEl.appendChild(p);
+  }
+}
+
+function updateChampionWalkerSpotlight(advance = true) {
+  const members =
+    Array.isArray(appState.members) && appState.members.length > 0
+      ? appState.members
+      : ['The Wroogle Company Crew'];
+
+  if (typeof window.__championWalkerIndex !== 'number') {
+    window.__championWalkerIndex = 0;
+  } else if (advance) {
+    window.__championWalkerIndex = (window.__championWalkerIndex + 1) % members.length;
+  }
+  const idx = window.__championWalkerIndex % members.length;
+  const walkerName = String(members[idx] || 'Wroogle Walker').trim();
+  const initial = walkerName.charAt(0).toUpperCase() || 'W';
+
+  const nameEl = document.getElementById('champion-walker-name');
+  const avatarEl = document.getElementById('champion-walker-avatar');
+  const counterEl = document.getElementById('champion-walker-counter');
+  const stageBox = document.getElementById('champion-walker-stage-box');
+  const burstEl = document.getElementById('walker-sprinkle-burst');
+  const roleEl = document.getElementById('champion-walker-role');
+
+  const accolades = [
+    '🥾 Wroogle Grand Slam Finisher · 10/10 Trails',
+    '🏔️ Appalachian & Kilimanjaro Conqueror',
+    '🏆 Walktober 2026 Legend · Wrocław Crew',
+    '🌟 5.40M+ Step Club Champion',
+    '🧭 Global Trailblazer · All 10 Checkpoints Stamped'
+  ];
+
+  if (nameEl) nameEl.textContent = walkerName;
+  if (avatarEl) avatarEl.textContent = initial;
+  if (counterEl) counterEl.textContent = `${idx + 1} / ${members.length}`;
+  if (roleEl) roleEl.textContent = accolades[idx % accolades.length];
+
+  if (stageBox) {
+    stageBox.classList.remove('walker-pop-anim');
+    // Force reflow to restart animation every 2 seconds
+    void stageBox.offsetWidth;
+    stageBox.classList.add('walker-pop-anim');
+  }
+
+  triggerWalkerSprinkleBurst(burstEl, 14);
+}
+
+function renderChampionsCupBanner(steps, allCompleted) {
+  const banner = document.getElementById('champions-cup-banner');
+  if (!banner) return;
+
+  if (!allCompleted) {
+    banner.classList.add('hidden');
+    if (window.__championWalkerTimer) {
+      clearInterval(window.__championWalkerTimer);
+      window.__championWalkerTimer = null;
+    }
+    return;
+  }
+
+  banner.classList.remove('hidden');
+
+  const finalGoal = MILESTONES[MILESTONES.length - 1].steps; // 5,403,000
+  const bonusSteps = Math.max(0, steps - finalGoal);
+  const bonusPill = document.getElementById('champions-bonus-pill');
+  if (bonusPill) {
+    bonusPill.textContent = `+${formatNum(bonusSteps)} BONUS STEPS BEYOND 5.40M`;
+  }
+
+  const subtextEl = document.getElementById('champions-subtext');
+  if (subtextEl) {
+    subtextEl.innerHTML = `From Gurgaon to the <strong>5,403,000-step Appalachian Trail finale</strong> — all 10 iconic world trails are officially stamped! With <strong>+${formatNum(
+      bonusSteps
+    )} bonus steps</strong> already stacked, we keep tracking every step until October 31!`;
+  }
+
+  // Populate ambient floating sprinkles once
+  const sprinklesLayer = document.getElementById('champions-sprinkles-layer');
+  if (sprinklesLayer && sprinklesLayer.childElementCount === 0) {
+    const colors = ['#facc15', '#fde047', '#34a853', '#ea4335', '#4285f4', '#fb923c', '#ffffff'];
+    let html = '';
+    for (let i = 0; i < 28; i++) {
+      const left = ((i * 3.7) % 98).toFixed(1);
+      const delay = ((i * 0.43) % 5).toFixed(2);
+      const dur = (3.4 + (i % 4) * 0.75).toFixed(2);
+      const color = colors[i % colors.length];
+      const size = 5 + (i % 4) * 2;
+      html += `<span class="ambient-sprinkle" style="left:${left}%; animation-delay:${delay}s; animation-duration:${dur}s; background:${color}; width:${size}px; height:${size}px;"></span>`;
+    }
+    sprinklesLayer.innerHTML = html;
+  }
+
+  // Populate continuous mini-marquee of all walkers
+  const marqueeEl = document.getElementById('champions-mini-marquee');
+  const members = Array.isArray(appState.members) ? appState.members : [];
+  if (marqueeEl && members.length > 0) {
+    const itemsHtml = [...members, ...members]
+      .map((m) => `<span class="marquee-walker-chip">✨ ${escapeHtml(m)}</span>`)
+      .join('');
+    if (marqueeEl.getAttribute('data-count') !== String(members.length)) {
+      marqueeEl.setAttribute('data-count', String(members.length));
+      marqueeEl.innerHTML = itemsHtml;
+    }
+  }
+
+  // Start 2-second rotator if not running yet
+  if (!window.__championWalkerTimer) {
+    updateChampionWalkerSpotlight(false);
+    window.__championWalkerTimer = setInterval(() => {
+      updateChampionWalkerSpotlight(true);
+    }, 2000);
+
+    const stageBox = document.getElementById('champion-walker-stage-box');
+    if (stageBox && !stageBox.__boundClick) {
+      stageBox.__boundClick = true;
+      stageBox.addEventListener('click', () => {
+        updateChampionWalkerSpotlight(true);
+      });
+    }
+    const trophyEl = document.getElementById('champions-trophy-emblem');
+    if (trophyEl && !trophyEl.__boundClick) {
+      trophyEl.__boundClick = true;
+      trophyEl.addEventListener('click', () => {
+        updateChampionWalkerSpotlight(true);
+      });
+    }
+  }
 }
 
 function renderCheckpointRibbon() {
@@ -1009,7 +1168,9 @@ function renderDailyChart() {
       <div class="daily-stat-box">
         <span class="daily-stat-label">Oct 31 Projected Total</span>
         <div class="daily-stat-value mono-num" style="color: #1a73e8;">~${formatChartPill(projectedTotal)}</div>
-        <span class="daily-stat-sub">On track for Appalachian Trail!</span>
+        <span class="daily-stat-sub">${
+          totalLogged >= 5403000 ? '🏆 5.40M Goal Crushed! Stacking Bonus' : 'On track for Appalachian Trail!'
+        }</span>
       </div>
     `;
   }
@@ -1126,7 +1287,7 @@ function renderDailyChart() {
           : `<span style="color: var(--text-muted); font-weight: 600;">-${formatNum(Math.abs(diffFromAvg))} below avg</span>`;
 
     let statusPill = '📅 October Day';
-    if (selectedDayObj.isToday) statusPill = '📍 Today (October 7)';
+    if (selectedDayObj.isToday) statusPill = `📍 Today (October ${selectedDayObj.dayNum})`;
     else if (isSelectedBest) statusPill = '🏆 Top Team Day';
     else if (selectedDayObj.isFuture) statusPill = '⏳ Upcoming Expedition Day';
     else if (selectedDayObj.delta > 0) statusPill = '✓ Logged Team Steps';
@@ -1414,10 +1575,10 @@ function openAdminModal() {
     dispatchInput.value = appState.teamMessage;
   }
   const dateInput = document.getElementById('admin-date-input');
-  if (dateInput && !dateInput.value) {
+  if (dateInput) {
     const now = new Date();
     const isOct = now.getMonth() === 9 && now.getFullYear() === 2026;
-    const d = isOct ? now.getDate() : 7;
+    const d = isOct ? Math.min(31, Math.max(1, now.getDate())) : 29;
     dateInput.value = `2026-10-${String(d).padStart(2, '0')}`;
   }
   updateAdminPreviewTotal();

@@ -2853,7 +2853,395 @@ body {
   color: var(--accent-forest);
 }
 
+/* ========================================================
+   🏆 ALL 10 MILESTONES CONQUERED: CHAMPIONSHIP CUP BANNER
+   ======================================================== */
+
+.champions-cup-banner {
+  position: relative;
+  margin-bottom: 26px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, #102a1f 0%, #193e2e 48%, #234b37 100%);
+  border: 2px solid rgba(250, 204, 21, 0.55);
+  box-shadow: 0 18px 42px -10px rgba(16, 42, 31, 0.38), 0 0 0 4px rgba(250, 204, 21, 0.14);
+  padding: 26px 30px;
+  color: #fffbeb;
+  overflow: hidden;
+}
+
+.champions-cup-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, #fde047 0%, #f59e0b 25%, #34a853 50%, #facc15 75%, #fde047 100%);
+  z-index: 3;
+}
+
+.champions-sprinkles-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.ambient-sprinkle {
+  position: absolute;
+  top: -12px;
+  border-radius: 999px;
+  opacity: 0.75;
+  animation: ambientFall linear infinite;
+}
+
+@keyframes ambientFall {
+  0% {
+    transform: translateY(-10px) rotate(0deg) scale(0.8);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.85;
+  }
+  80% {
+    opacity: 0.75;
+  }
+  100% {
+    transform: translateY(210px) rotate(320deg) scale(1.1);
+    opacity: 0;
+  }
+}
+
+.champions-banner-inner {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1.25fr 0.95fr;
+  gap: 28px;
+  align-items: center;
+}
+
+.champions-cup-main {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.champions-trophy-emblem {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.25s ease;
+}
+
+.champions-trophy-emblem:hover {
+  transform: scale(1.08) rotate(-4deg);
+}
+
+.trophy-glow-ring {
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(250, 204, 21, 0.38) 0%, rgba(250, 204, 21, 0) 72%);
+  animation: trophyPulse 2.6s ease-in-out infinite;
+}
+
+@keyframes trophyPulse {
+  0%, 100% {
+    transform: scale(0.95);
+    opacity: 0.75;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+}
+
+.trophy-cup-svg {
+  width: 82px;
+  height: 82px;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.35));
+  position: relative;
+  z-index: 2;
+}
+
+.trophy-10-badge {
+  position: absolute;
+  bottom: -4px;
+  background: linear-gradient(90deg, #facc15, #f59e0b);
+  color: #1c1917;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 2px 9px;
+  border-radius: 999px;
+  border: 2px solid #102a1f;
+  z-index: 3;
+  letter-spacing: 0.04em;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.champions-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.champions-eyebrow-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.champions-pill {
+  background: linear-gradient(90deg, #fde047, #f59e0b);
+  color: #142920;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  padding: 4px 11px;
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+
+.champions-bonus-pill {
+  background: rgba(255, 255, 255, 0.13);
+  border: 1px solid rgba(253, 224, 71, 0.45);
+  color: #fde047;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+.champions-headline {
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 2.2vw, 1.78rem);
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.18;
+}
+
+.champions-subtext {
+  font-size: 0.88rem;
+  color: rgba(255, 251, 235, 0.88);
+  line-height: 1.48;
+}
+
+.champions-subtext strong {
+  color: #fde047;
+}
+
+/* Right: 2-Second Walker Spotlight Stage */
+.champions-walker-spotlight {
+  background: rgba(10, 26, 19, 0.56);
+  border: 1px solid rgba(253, 224, 71, 0.38);
+  border-radius: var(--radius-md);
+  padding: 14px 18px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  backdrop-filter: blur(6px);
+}
+
+.spotlight-stage-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.spotlight-stage-label {
+  font-size: 0.69rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  color: #fde047;
+  text-transform: uppercase;
+}
+
+.spotlight-stage-count {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.78);
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.champion-walker-stage-box {
+  position: relative;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.13) 0%, rgba(250, 204, 21, 0.12) 100%);
+  border: 1px solid rgba(253, 224, 71, 0.48);
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  overflow: visible;
+  min-height: 66px;
+}
+
+.walker-pop-anim {
+  animation: walkerSpotlightPop 0.52s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes walkerSpotlightPop {
+  0% {
+    opacity: 0.25;
+    transform: translateY(8px) scale(0.96);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.champion-walker-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fde047 0%, #d97706 100%);
+  color: #142920;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.28);
+}
+
+.champion-walker-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.champion-walker-name {
+  font-size: 1.16rem;
+  font-weight: 800;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.01em;
+}
+
+.champion-walker-role {
+  font-size: 0.76rem;
+  color: #fde047;
+  font-weight: 600;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.champion-walker-medal {
+  font-size: 1.45rem;
+  flex-shrink: 0;
+}
+
+/* Sprinkle Burst Particles on every 2s Walker Change */
+.walker-sprinkle-burst {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 5;
+}
+
+.sprinkle-particle {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: sprinkleBurstOut 1.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.sprinkle-particle.sprinkle-symbol {
+  width: auto;
+  height: auto;
+  background: transparent !important;
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+@keyframes sprinkleBurstOut {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(0.4) rotate(0deg);
+  }
+  70% {
+    opacity: 0.95;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx, 30px), var(--dy, -30px)) scale(1.15) rotate(var(--rot, 180deg));
+  }
+}
+
+/* Continuous Mini-Marquee of All Walkers */
+.champions-mini-marquee-wrap {
+  overflow: hidden;
+  width: 100%;
+  mask-image: linear-gradient(90deg, transparent 0%, #000 10%, #000 90%, transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 10%, #000 90%, transparent 100%);
+}
+
+.champions-mini-marquee {
+  display: inline-flex;
+  gap: 14px;
+  white-space: nowrap;
+  animation: championsMarqueeScroll 38s linear infinite;
+}
+
+@keyframes championsMarqueeScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-walker-chip {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: rgba(255, 251, 235, 0.82);
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+@media (max-width: 1024px) {
+  .champions-banner-inner {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 768px) {
+  .champions-cup-main {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .champions-eyebrow-row {
+    justify-content: center;
+  }
 
   .milestones-trail-grid,
   .join-reminders-list,
@@ -2874,4 +3262,5 @@ body {
     align-items: flex-start;
   }
 }
+
 
