@@ -484,6 +484,24 @@ function triggerWalkerSprinkleBurst(containerEl, count = 14) {
   }
 }
 
+const GNOME_AVATARS = [
+  '/images/gnome-1.jpg',
+  '/images/gnome-2.jpg',
+  '/images/gnome-3.jpg',
+  '/images/gnome-4.jpg',
+  '/images/gnome-5.jpg',
+  '/images/gnome-6.jpg'
+];
+
+function preloadGnomeAvatars() {
+  if (window.__gnomeAvatarsPreloaded) return;
+  window.__gnomeAvatarsPreloaded = true;
+  GNOME_AVATARS.forEach((src) => {
+    const img = new Image();
+    img.src = src;
+  });
+}
+
 function updateChampionWalkerSpotlight(advance = true) {
   const members =
     Array.isArray(appState.members) && appState.members.length > 0
@@ -497,27 +515,22 @@ function updateChampionWalkerSpotlight(advance = true) {
   }
   const idx = window.__championWalkerIndex % members.length;
   const walkerName = String(members[idx] || 'Wroogle Walker').trim();
-  const initial = walkerName.charAt(0).toUpperCase() || 'W';
 
   const nameEl = document.getElementById('champion-walker-name');
-  const avatarEl = document.getElementById('champion-walker-avatar');
+  const gnomeImgEl = document.getElementById('champion-gnome-avatar');
   const counterEl = document.getElementById('champion-walker-counter');
   const stageBox = document.getElementById('champion-walker-stage-box');
   const burstEl = document.getElementById('walker-sprinkle-burst');
-  const roleEl = document.getElementById('champion-walker-role');
 
-  const accolades = [
-    '🥾 Wroogle Grand Slam Finisher · 10/10 Trails',
-    '🏔️ Appalachian & Kilimanjaro Conqueror',
-    '🏆 Walktober 2026 Legend · Wrocław Crew',
-    '🌟 5.40M+ Step Club Champion',
-    '🧭 Global Trailblazer · All 10 Checkpoints Stamped'
-  ];
+  // Pick a distinct gnome image so consecutive walkers always get a fresh gnome portrait
+  const gnomeSrc = GNOME_AVATARS[idx % GNOME_AVATARS.length];
 
   if (nameEl) nameEl.textContent = walkerName;
-  if (avatarEl) avatarEl.textContent = initial;
+  if (gnomeImgEl) {
+    gnomeImgEl.src = gnomeSrc;
+    gnomeImgEl.alt = `${walkerName} Gnome Avatar`;
+  }
   if (counterEl) counterEl.textContent = `${idx + 1} / ${members.length}`;
-  if (roleEl) roleEl.textContent = accolades[idx % accolades.length];
 
   if (stageBox) {
     stageBox.classList.remove('walker-pop-anim');
@@ -542,20 +555,17 @@ function renderChampionsCupBanner(steps, allCompleted) {
     return;
   }
 
+  preloadGnomeAvatars();
   banner.classList.remove('hidden');
 
   const finalGoal = MILESTONES[MILESTONES.length - 1].steps; // 5,403,000
   const bonusSteps = Math.max(0, steps - finalGoal);
-  const bonusPill = document.getElementById('champions-bonus-pill');
-  if (bonusPill) {
-    bonusPill.textContent = `+${formatNum(bonusSteps)} BONUS STEPS BEYOND 5.40M`;
-  }
 
   const subtextEl = document.getElementById('champions-subtext');
   if (subtextEl) {
-    subtextEl.innerHTML = `From Gurgaon to the <strong>5,403,000-step Appalachian Trail finale</strong> — all 10 iconic world trails are officially stamped! With <strong>+${formatNum(
+    subtextEl.innerHTML = `Every single one of our 10 global trails (<strong>5,403,000 steps</strong>) is officially stamped — with <strong>+${formatNum(
       bonusSteps
-    )} bonus steps</strong> already stacked, we keep tracking every step until October 31!`;
+    )} bonus steps</strong> already logged as we finish out October!`;
   }
 
   // Populate ambient floating sprinkles once
@@ -572,19 +582,6 @@ function renderChampionsCupBanner(steps, allCompleted) {
       html += `<span class="ambient-sprinkle" style="left:${left}%; animation-delay:${delay}s; animation-duration:${dur}s; background:${color}; width:${size}px; height:${size}px;"></span>`;
     }
     sprinklesLayer.innerHTML = html;
-  }
-
-  // Populate continuous mini-marquee of all walkers
-  const marqueeEl = document.getElementById('champions-mini-marquee');
-  const members = Array.isArray(appState.members) ? appState.members : [];
-  if (marqueeEl && members.length > 0) {
-    const itemsHtml = [...members, ...members]
-      .map((m) => `<span class="marquee-walker-chip">✨ ${escapeHtml(m)}</span>`)
-      .join('');
-    if (marqueeEl.getAttribute('data-count') !== String(members.length)) {
-      marqueeEl.setAttribute('data-count', String(members.length));
-      marqueeEl.innerHTML = itemsHtml;
-    }
   }
 
   // Start 2-second rotator if not running yet
