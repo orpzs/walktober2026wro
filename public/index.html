@@ -133,32 +133,30 @@
                   The Wroogle Company Conquered the World!
                 </h2>
                 <p class="champions-subtext" id="champions-subtext">
-                  Every single one of our 10 global trails (<strong>5,403,000 steps</strong>) is officially stamped — and we're still stacking bonus steps through October 31!
+                  All 10 global trails (<strong>5,403,000 steps</strong>) are officially stamped — with <strong>+31,495 bonus steps</strong> and counting!
                 </p>
               </div>
             </div>
 
-            <!-- Right: 2-Second Walker Spotlight Rotator with Gnome Portrait & Sprinkles -->
-            <div class="champions-walker-spotlight" id="champions-walker-spotlight">
-              <div class="spotlight-stage-top">
-                <span class="spotlight-stage-label">✨ WROOGLE CHAMPIONS HONOR ROLL</span>
-                <span class="spotlight-stage-count mono-num" id="champion-walker-counter">1 / 24</span>
+            <!-- Right: 2-Second Walker Spotlight Rotator with Animated Gnome & Sprinkles -->
+            <div class="champion-walker-stage-box" id="champion-walker-stage-box" title="Click to advance to the next Wroogle Champion">
+              <div class="walker-sprinkle-burst" id="walker-sprinkle-burst" aria-hidden="true"></div>
+              <div class="champion-gnome-avatar-wrap" id="champion-gnome-avatar-wrap">
+                <img
+                  src="/images/gnome-1.jpg"
+                  alt="Wrocław Gnome Champion Avatar Frame 1"
+                  class="champion-gnome-avatar gnome-frame-1"
+                  id="champion-gnome-avatar"
+                />
+                <img
+                  src="/images/gnome-1b.jpg"
+                  alt="Wrocław Gnome Champion Avatar Frame 2"
+                  class="champion-gnome-avatar gnome-frame-2"
+                  id="champion-gnome-avatar-f2"
+                />
               </div>
-
-              <div class="champion-walker-stage-box" id="champion-walker-stage-box" title="Click to advance to the next Wroogle Champion">
-                <div class="walker-sprinkle-burst" id="walker-sprinkle-burst" aria-hidden="true"></div>
-                <div class="champion-gnome-avatar-wrap">
-                  <img
-                    src="/images/gnome-1.jpg"
-                    alt="Wrocław Gnome Champion Avatar"
-                    class="champion-gnome-avatar"
-                    id="champion-gnome-avatar"
-                  />
-                </div>
-                <div class="champion-walker-info">
-                  <div class="champion-walker-name" id="champion-walker-name">Moksh Atukuri</div>
-                </div>
-                <div class="champion-walker-medal" aria-hidden="true">🏆</div>
+              <div class="champion-walker-info">
+                <div class="champion-walker-name" id="champion-walker-name">Moksh Atukuri</div>
               </div>
             </div>
           </div>
@@ -781,7 +779,7 @@
           <div class="admin-members-box" id="admin-members-box">
             <div class="admin-members-header">
               <strong>🥾 Team Members Roster ("The Wroogle Company")</strong>
-              <p>Add names or LDAPs of teammates who joined (separate multiple names with commas):</p>
+              <p>Add names below (choose Male/Female Gnome, or click <strong>M / F</strong> on any chip to switch):</p>
             </div>
             <form id="member-add-form" class="member-add-form">
               <input
@@ -790,6 +788,10 @@
                 placeholder="e.g. Ania K., Piotr W., mokshazna"
                 maxlength="240"
               />
+              <select id="admin-member-gender" class="admin-member-gender-select" aria-label="Gnome Gender">
+                <option value="M">🧙‍♂️ Male (M)</option>
+                <option value="F">🧙‍♀️ Female (F)</option>
+              </select>
               <button type="submit" class="btn-secondary-sm btn-add-member" id="btn-add-member">
                 + Add to Roster
               </button>

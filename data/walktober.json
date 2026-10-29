@@ -29,6 +29,32 @@
     "Alicja Geroudet",
     "Arsenii Tepliuk"
   ],
+  "memberGenders": {
+    "Moksh Atukuri": "M",
+    "Aleksandra (Sasha) Liubimova": "F",
+    "Hürü Ismayilzada": "F",
+    "Philipp Kuhr": "M",
+    "Matthias Ziener": "M",
+    "Dawid Myśliwiec": "M",
+    "Natascha Schoepl": "F",
+    "Klaudia Wozniak": "F",
+    "Joanna Nowek": "F",
+    "Przemysław Józefowicz": "M",
+    "Paweł Glica": "M",
+    "Ewa Owczarewicz": "F",
+    "Mohamed Abdalhamid": "M",
+    "Iwona Chmielik": "F",
+    "Paweł Tokarski": "M",
+    "Łukasz Choczaj": "M",
+    "Adrianna Łapucha": "F",
+    "Andrea Rangel": "F",
+    "Aniuta Kash": "F",
+    "Tomasz Król": "M",
+    "Thangaraju Rajasekaran": "M",
+    "Piotr Giziński": "M",
+    "Alicja Geroudet": "F",
+    "Arsenii Tepliuk": "M"
+  },
   "visitors": [
     {
       "ldap": "mokshazna",

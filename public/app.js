@@ -181,6 +181,7 @@ const appState = {
   updatedBy: 'mokshazna',
   teamMessage: '',
   members: [],
+  memberGenders: {},
   visitors: [],
   history: [],
   auth: {
@@ -484,21 +485,79 @@ function triggerWalkerSprinkleBurst(containerEl, count = 14) {
   }
 }
 
-const GNOME_AVATARS = [
-  '/images/gnome-1.jpg',
-  '/images/gnome-2.jpg',
-  '/images/gnome-3.jpg',
-  '/images/gnome-4.jpg',
-  '/images/gnome-5.jpg',
-  '/images/gnome-6.jpg'
+const MALE_GNOME_AVATARS = [
+  { f1: '/images/gnome-1.jpg', f2: '/images/gnome-1b.jpg' },
+  { f1: '/images/gnome-2.jpg', f2: '/images/gnome-2b.jpg' },
+  { f1: '/images/gnome-3.jpg', f2: '/images/gnome-3b.jpg' },
+  { f1: '/images/gnome-4.jpg', f2: '/images/gnome-4b.jpg' },
+  { f1: '/images/gnome-5.jpg', f2: '/images/gnome-5b.jpg' },
+  { f1: '/images/gnome-6.jpg', f2: '/images/gnome-6b.jpg' }
 ];
+
+const FEMALE_GNOME_AVATARS = [
+  { f1: '/images/gnome-f1.jpg', f2: '/images/gnome-f1b.jpg' },
+  { f1: '/images/gnome-f2.jpg', f2: '/images/gnome-f2b.jpg' },
+  { f1: '/images/gnome-f3.jpg', f2: '/images/gnome-f3b.jpg' },
+  { f1: '/images/gnome-f4.jpg', f2: '/images/gnome-f4b.jpg' },
+  { f1: '/images/gnome-f5.jpg', f2: '/images/gnome-f5b.jpg' },
+  { f1: '/images/gnome-f6.jpg', f2: '/images/gnome-f6b.jpg' }
+];
+
+const FEMALE_FIRST_NAMES = new Set([
+  'aleksandra',
+  'sasha',
+  'hürü',
+  'huru',
+  'natascha',
+  'klaudia',
+  'joanna',
+  'ewa',
+  'iwona',
+  'adrianna',
+  'andrea',
+  'aniuta',
+  'alicja',
+  'anna',
+  'katarzyna',
+  'magdalena',
+  'agnieszka',
+  'karolina',
+  'monika',
+  'natalia',
+  'marta',
+  'julia',
+  'zuzanna',
+  'maria',
+  'olga',
+  'paulina'
+]);
+
+function isFemaleWalker(fullName) {
+  const cleanName = String(fullName || '').trim();
+  const explicitGender = appState.memberGenders && appState.memberGenders[cleanName];
+  if (explicitGender === 'F') return true;
+  if (explicitGender === 'M') return false;
+
+  const firstToken = cleanName
+    .split(/\s+/)[0]
+    .replace(/[^a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻüÜ]/g, '')
+    .toLowerCase();
+  if (!firstToken) return false;
+  if (FEMALE_FIRST_NAMES.has(firstToken)) return true;
+  if (firstToken.endsWith('a') && firstToken !== 'kuba' && firstToken !== 'barnaba') {
+    return true;
+  }
+  return false;
+}
 
 function preloadGnomeAvatars() {
   if (window.__gnomeAvatarsPreloaded) return;
   window.__gnomeAvatarsPreloaded = true;
-  GNOME_AVATARS.forEach((src) => {
-    const img = new Image();
-    img.src = src;
+  [...MALE_GNOME_AVATARS, ...FEMALE_GNOME_AVATARS].forEach((pair) => {
+    const img1 = new Image();
+    img1.src = pair.f1;
+    const img2 = new Image();
+    img2.src = pair.f2;
   });
 }
 
@@ -518,19 +577,32 @@ function updateChampionWalkerSpotlight(advance = true) {
 
   const nameEl = document.getElementById('champion-walker-name');
   const gnomeImgEl = document.getElementById('champion-gnome-avatar');
-  const counterEl = document.getElementById('champion-walker-counter');
+  const gnomeImgF2El = document.getElementById('champion-gnome-avatar-f2');
   const stageBox = document.getElementById('champion-walker-stage-box');
   const burstEl = document.getElementById('walker-sprinkle-burst');
 
-  // Pick a distinct gnome image so consecutive walkers always get a fresh gnome portrait
-  const gnomeSrc = GNOME_AVATARS[idx % GNOME_AVATARS.length];
+  const isFemale = isFemaleWalker(walkerName);
+  if (typeof window.__femaleGnomeCursor !== 'number') window.__femaleGnomeCursor = 0;
+  if (typeof window.__maleGnomeCursor !== 'number') window.__maleGnomeCursor = 0;
+
+  let gnomePair;
+  if (isFemale) {
+    gnomePair = FEMALE_GNOME_AVATARS[window.__femaleGnomeCursor % FEMALE_GNOME_AVATARS.length];
+    if (advance) window.__femaleGnomeCursor++;
+  } else {
+    gnomePair = MALE_GNOME_AVATARS[window.__maleGnomeCursor % MALE_GNOME_AVATARS.length];
+    if (advance) window.__maleGnomeCursor++;
+  }
 
   if (nameEl) nameEl.textContent = walkerName;
-  if (gnomeImgEl) {
-    gnomeImgEl.src = gnomeSrc;
+  if (gnomeImgEl && gnomePair) {
+    gnomeImgEl.src = gnomePair.f1;
     gnomeImgEl.alt = `${walkerName} Gnome Avatar`;
   }
-  if (counterEl) counterEl.textContent = `${idx + 1} / ${members.length}`;
+  if (gnomeImgF2El && gnomePair) {
+    gnomeImgF2El.src = gnomePair.f2;
+    gnomeImgF2El.alt = `${walkerName} Gnome Action Avatar`;
+  }
 
   if (stageBox) {
     stageBox.classList.remove('walker-pop-anim');
@@ -563,9 +635,9 @@ function renderChampionsCupBanner(steps, allCompleted) {
 
   const subtextEl = document.getElementById('champions-subtext');
   if (subtextEl) {
-    subtextEl.innerHTML = `Every single one of our 10 global trails (<strong>5,403,000 steps</strong>) is officially stamped — with <strong>+${formatNum(
+    subtextEl.innerHTML = `All 10 global trails (<strong>5,403,000 steps</strong>) are officially stamped — with <strong>+${formatNum(
       bonusSteps
-    )} bonus steps</strong> already logged as we finish out October!`;
+    )} bonus steps</strong> and counting!`;
   }
 
   // Populate ambient floating sprinkles once
@@ -1388,15 +1460,28 @@ function renderTeamRoster() {
       adminChips.innerHTML = `<span class="roster-empty-msg">No members added yet.</span>`;
     } else {
       adminChips.innerHTML = members
-        .map(
-          (name) => `
+        .map((name) => {
+          const isFem = isFemaleWalker(name);
+          const genderCode = isFem ? 'F' : 'M';
+          const genderLabel = isFem ? '🧙‍♀️ F' : '🧙‍♂️ M';
+          return `
           <span class="admin-member-chip">
             <span>${escapeHtml(name)}</span>
+            <button type="button" class="btn-toggle-gender ${isFem ? 'gender-f' : 'gender-m'}" data-toggle-gender="${escapeHtml(name)}" data-current-gender="${genderCode}" title="Click to switch Gnome between Male (M) and Female (F)">${genderLabel}</button>
             <button type="button" class="btn-remove-member" data-remove-member="${escapeHtml(name)}" title="Remove ${escapeHtml(name)}">✕</button>
           </span>
-        `
-        )
+        `;
+        })
         .join('');
+
+      adminChips.querySelectorAll('[data-toggle-gender]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const targetName = btn.getAttribute('data-toggle-gender');
+          const cur = btn.getAttribute('data-current-gender');
+          const nextGender = cur === 'F' ? 'M' : 'F';
+          await handleToggleMemberGender(targetName, nextGender);
+        });
+      });
 
       adminChips.querySelectorAll('[data-remove-member]').forEach((btn) => {
         btn.addEventListener('click', async () => {
@@ -1484,6 +1569,8 @@ function applyServerState(data) {
   appState.updatedBy = data.updatedBy || 'mokshazna';
   appState.teamMessage = data.teamMessage || '';
   appState.members = Array.isArray(data.members) ? data.members : [];
+  appState.memberGenders =
+    data.memberGenders && typeof data.memberGenders === 'object' ? data.memberGenders : {};
   appState.visitors = Array.isArray(data.visitors) ? data.visitors : [];
   appState.history = Array.isArray(data.history) ? data.history : [];
   if (data.auth) {
@@ -1531,6 +1618,25 @@ async function handleDeleteHistoryEntry(id) {
     showToast('↩️ Step entry reverted.');
   } catch (err) {
     showToast('⚠️ Network error while reverting entry.');
+  }
+}
+
+async function handleToggleMemberGender(name, gender) {
+  try {
+    const res = await fetch('/api/members', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'setGender', name, gender })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      showToast(`⚠️ ${data.error || 'Could not update gender'}`);
+      return;
+    }
+    applyServerState(data);
+    showToast(`${gender === 'F' ? '🧙‍♀️ Female' : '🧙‍♂️ Male'} Gnome set for ${name}!`);
+  } catch (err) {
+    showToast('⚠️ Network error updating member gender.');
   }
 }
 
@@ -1787,14 +1893,16 @@ function bindEvents() {
     memberAddForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const memberInput = document.getElementById('admin-member-input');
+      const genderSelect = document.getElementById('admin-member-gender');
       const names = memberInput.value.trim();
+      const gender = genderSelect ? genderSelect.value : 'M';
       if (!names) return;
 
       try {
         const res = await fetch('/api/members', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'add', names })
+          body: JSON.stringify({ action: 'add', names, gender })
         });
         const data = await res.json();
         if (!res.ok) {

@@ -18,6 +18,7 @@ const MIME_TYPES = {
   '.png': 'image/png',
   '.jpg': 'image/jpeg',
   '.jpeg': 'image/jpeg',
+  '.gif': 'image/gif',
   '.svg': 'image/svg+xml',
   '.ico': 'image/x-icon',
   '.webp': 'image/webp'
@@ -41,6 +42,7 @@ function ensureDataFile() {
       teamMessage:
         "Welcome to Walktober 2026, Wrooglers! Lace up in Wrocław and let's conquer all 10 world trails together!",
       members: [],
+      memberGenders: {},
       history: []
     };
     fs.writeFileSync(DATA_FILE, JSON.stringify(initialData, null, 2), 'utf8');
@@ -61,6 +63,63 @@ function normalizeMembers(rawMembers) {
     }
   }
   return clean.slice(0, 300);
+}
+
+const KNOWN_FEMALE_FIRST = new Set([
+  'aleksandra',
+  'sasha',
+  'hürü',
+  'huru',
+  'natascha',
+  'klaudia',
+  'joanna',
+  'ewa',
+  'iwona',
+  'adrianna',
+  'andrea',
+  'aniuta',
+  'alicja',
+  'anna',
+  'katarzyna',
+  'magdalena',
+  'agnieszka',
+  'karolina',
+  'monika',
+  'natalia',
+  'marta',
+  'julia',
+  'zuzanna',
+  'maria',
+  'olga',
+  'paulina'
+]);
+
+function inferGender(fullName) {
+  const firstToken = String(fullName || '')
+    .trim()
+    .split(/\s+/)[0]
+    .replace(/[^a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻüÜ]/g, '')
+    .toLowerCase();
+  if (!firstToken) return 'M';
+  if (KNOWN_FEMALE_FIRST.has(firstToken)) return 'F';
+  if (firstToken.endsWith('a') && firstToken !== 'kuba' && firstToken !== 'barnaba') {
+    return 'F';
+  }
+  return 'M';
+}
+
+function normalizeMemberGenders(rawGenders, members) {
+  const src = rawGenders && typeof rawGenders === 'object' ? rawGenders : {};
+  const result = {};
+  for (const m of members) {
+    const explicit = src[m];
+    if (explicit === 'F' || explicit === 'M') {
+      result[m] = explicit;
+    } else {
+      result[m] = inferGender(m);
+    }
+  }
+  return result;
 }
 
 const SEED_VISITORS = [
@@ -94,6 +153,7 @@ function readState() {
   try {
     const raw = fs.readFileSync(DATA_FILE, 'utf8');
     const parsed = JSON.parse(raw);
+    const members = normalizeMembers(parsed.members);
     return {
       totalSteps: Math.max(0, Number(parsed.totalSteps) || 0),
       updatedAt: parsed.updatedAt || new Date().toISOString(),
@@ -102,7 +162,8 @@ function readState() {
         typeof parsed.teamMessage === 'string'
           ? parsed.teamMessage
           : 'Onward from Wrocław to the Appalachian Trail!',
-      members: normalizeMembers(parsed.members),
+      members,
+      memberGenders: normalizeMemberGenders(parsed.memberGenders, members),
       visitors: normalizeVisitors(parsed.visitors),
       history: Array.isArray(parsed.history) ? parsed.history : []
     };
@@ -114,6 +175,7 @@ function readState() {
       updatedBy: ADMIN_LDAP,
       teamMessage: 'Onward from Wrocław to the Appalachian Trail!',
       members: [],
+      memberGenders: {},
       visitors: normalizeVisitors(SEED_VISITORS),
       history: []
     };
@@ -122,6 +184,7 @@ function readState() {
 
 function writeState(newState) {
   ensureDataFile();
+  const members = normalizeMembers(newState.members);
   const safeState = {
     totalSteps: Math.max(0, Math.round(Number(newState.totalSteps) || 0)),
     updatedAt: newState.updatedAt || new Date().toISOString(),
@@ -130,7 +193,8 @@ function writeState(newState) {
       typeof newState.teamMessage === 'string'
         ? newState.teamMessage.slice(0, 400)
         : '',
-    members: normalizeMembers(newState.members),
+    members,
+    memberGenders: normalizeMemberGenders(newState.memberGenders, members),
     visitors: normalizeVisitors(newState.visitors),
     history: Array.isArray(newState.history) ? newState.history.slice(0, 150) : []
   };
@@ -450,6 +514,7 @@ const server = http.createServer(async (req, res) => {
         updatedBy: auth.ldap || ADMIN_LDAP,
         teamMessage: nextTeamMessage,
         members: state.members,
+        memberGenders: state.memberGenders,
         visitors: state.visitors,
         history: combinedHistory
       });
@@ -460,7 +525,7 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
-  // POST /api/members (Add or remove team members on The Wroogle Company roster)
+  // POST /api/members (Add, remove, or set gender of team members on The Wroogle Company roster)
   if (pathname === '/api/members' && req.method === 'POST') {
     const auth = getAuthContext(req);
     if (!auth.isAdmin) {
@@ -473,6 +538,7 @@ const server = http.createServer(async (req, res) => {
       const state = readState();
       const action = body.action || 'add';
       let nextMembers = [...state.members];
+      const nextGenders = { ...(state.memberGenders || {}) };
 
       if (action === 'add') {
         const rawInput = String(body.names || body.name || '');
@@ -483,10 +549,20 @@ const server = http.createServer(async (req, res) => {
         if (splitNames.length === 0) {
           return sendJson(res, 400, { error: 'Please enter at least one team member name.' });
         }
+        const preferredGender = body.gender === 'F' ? 'F' : body.gender === 'M' ? 'M' : null;
+        for (const n of splitNames) {
+          nextGenders[n] = preferredGender || inferGender(n);
+        }
         nextMembers = normalizeMembers([...nextMembers, ...splitNames]);
       } else if (action === 'remove') {
         const target = String(body.name || '').trim().toLowerCase();
         nextMembers = nextMembers.filter((m) => m.toLowerCase() !== target);
+      } else if (action === 'setGender') {
+        const targetName = String(body.name || '').trim();
+        const gender = body.gender === 'F' ? 'F' : 'M';
+        if (targetName) {
+          nextGenders[targetName] = gender;
+        }
       } else if (action === 'set' && Array.isArray(body.members)) {
         nextMembers = normalizeMembers(body.members);
       }
@@ -495,7 +571,8 @@ const server = http.createServer(async (req, res) => {
         ...state,
         updatedAt: new Date().toISOString(),
         updatedBy: auth.ldap || ADMIN_LDAP,
-        members: nextMembers
+        members: nextMembers,
+        memberGenders: nextGenders
       });
       return sendJson(res, 200, { ...updatedState, auth });
     } catch (err) {
@@ -589,6 +666,7 @@ const server = http.createServer(async (req, res) => {
         updatedBy: auth.ldap || ADMIN_LDAP,
         teamMessage: body.teamMessage || 'Restored expedition state.',
         members: Array.isArray(body.members) ? body.members : state.members,
+        memberGenders: body.memberGenders || state.memberGenders,
         visitors: Array.isArray(body.visitors) ? body.visitors : state.visitors,
         history: Array.isArray(body.history) ? body.history : []
       });
