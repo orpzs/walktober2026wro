@@ -367,9 +367,10 @@ function renderHeroSection() {
   }
 
   // October Day Badge
-  const now = new Date();
-  const dayOfOct = now.getMonth() === 9 ? now.getDate() : 1;
-  document.getElementById('october-day-badge').textContent = `OCTOBER DAY ${dayOfOct} OF 31`;
+  const { currentDay: dayOfOct, isCompleted: octCompleted } = getExpeditionDayInfo();
+  document.getElementById('october-day-badge').textContent = octCompleted
+    ? 'OCTOBER EXPEDITION COMPLETE · 31 OF 31 DAYS'
+    : `OCTOBER DAY ${dayOfOct} OF 31`;
 
   // Big Step Counter
   document.getElementById('hero-total-steps').textContent = formatNum(steps);
@@ -614,6 +615,20 @@ function updateChampionWalkerSpotlight(advance = true) {
   triggerWalkerSprinkleBurst(burstEl, 14);
 }
 
+function getExpeditionDayInfo() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth(); // 0-indexed: 9 = October
+  if (year > 2026 || (year === 2026 && month > 9)) {
+    return { currentDay: 31, isCompleted: true, isOct: false };
+  }
+  if (year === 2026 && month === 9) {
+    const d = Math.min(31, Math.max(1, now.getDate()));
+    return { currentDay: d, isCompleted: d >= 31, isOct: true };
+  }
+  return { currentDay: 31, isCompleted: true, isOct: false };
+}
+
 function renderChampionsCupBanner(steps, allCompleted) {
   const banner = document.getElementById('champions-cup-banner');
   if (!banner) return;
@@ -635,9 +650,9 @@ function renderChampionsCupBanner(steps, allCompleted) {
 
   const subtextEl = document.getElementById('champions-subtext');
   if (subtextEl) {
-    subtextEl.innerHTML = `All 10 global trails (<strong>5,403,000 steps</strong>) are officially stamped — with <strong>+${formatNum(
-      bonusSteps
-    )} bonus steps</strong> and counting!`;
+    subtextEl.innerHTML = `All 10 global trails (<strong>5,403,000 steps</strong>) are officially stamped — finishing our 31-day October trek with <strong>${formatNum(
+      steps
+    )} total steps</strong> (<strong>+${formatNum(bonusSteps)} bonus steps</strong>)!`;
   }
 
   // Populate ambient floating sprinkles once
@@ -855,8 +870,7 @@ function renderMilestoneCards() {
     return;
   }
 
-  const now = new Date();
-  const currentDay = now.getMonth() === 9 ? Math.max(1, now.getDate()) : 1;
+  const { currentDay } = getExpeditionDayInfo();
   const remainingDays = Math.max(1, 31 - currentDay + 1);
   const orbCircumference = 2 * Math.PI * 21; // r=21 -> ~131.95
 
@@ -927,8 +941,7 @@ function renderMilestoneCards() {
 
 function renderLogbookAndPace() {
   const steps = getEffectiveSteps();
-  const now = new Date();
-  const currentDay = now.getMonth() === 9 ? Math.max(1, now.getDate()) : 1;
+  const { currentDay, isCompleted } = getExpeditionDayInfo();
   const remainingDays = Math.max(1, 31 - currentDay + 1);
   const currentDailyAvg = Math.round(steps / currentDay);
   const projectedOct31Total = Math.round(steps + currentDailyAvg * (31 - currentDay));
@@ -940,7 +953,16 @@ function renderLogbookAndPace() {
 
   const storyEl = document.getElementById('pace-plain-story');
   if (storyEl) {
-    if (steps === 0) {
+    if (steps >= 5403000 || isCompleted) {
+      const bonus = Math.max(0, steps - 5403000);
+      storyEl.innerHTML = `Across all <strong>31 days of October</strong>, The Wroogle Company walked <strong>${formatNum(
+        steps
+      )} total steps</strong> — an average team pace of <strong>${formatNum(
+        currentDailyAvg
+      )} steps per day</strong>! We conquered all <strong>10 global trails (5,403,000 steps)</strong> with <strong>+${formatNum(
+        bonus
+      )} bonus steps</strong> beyond the Appalachian Trail finish line:`;
+    } else if (steps === 0) {
       storyEl.innerHTML = `Today is <strong>October ${currentDay}</strong>, giving our team <strong>${remainingDays} days left</strong> in October. Once we log our first steps, this section will show our daily walking speed and which trail we are on track to reach by October 31!`;
     } else {
       const projectionSentence = highestProjected
@@ -1135,9 +1157,7 @@ function renderDailyChart() {
     btnCum.classList.toggle('active', mode === 'cumulative');
   }
 
-  const now = new Date();
-  const isOct = now.getMonth() === 9 && now.getFullYear() === 2026;
-  const currentDay = isOct ? Math.min(31, Math.max(1, now.getDate())) : 7;
+  const { currentDay, isCompleted, isOct } = getExpeditionDayInfo();
 
   // Group history entries by local date (Wrocław timezone)
   const entriesByDate = new Map();
@@ -1161,9 +1181,9 @@ function renderDailyChart() {
     const dateObj = new Date(2026, 9, d, 12, 0, 0);
     const dayOfWeek = dateObj.getDay();
     const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-    const isToday = d === currentDay;
-    const isPast = d < currentDay;
-    const isFuture = d > currentDay;
+    const isToday = isOct && d === currentDay;
+    const isPast = isCompleted ? true : d < currentDay;
+    const isFuture = isCompleted ? false : d > currentDay;
 
     const dayEntries = entriesByDate.get(dateKey) || [];
     // Sort entries on this day by timestamp ascending
@@ -1205,6 +1225,7 @@ function renderDailyChart() {
   const dailyAverage =
     currentDay > 0 ? Math.round(totalLogged / Math.max(1, currentDay)) : 0;
   const projectedTotal = Math.round(totalLogged + dailyAverage * (31 - currentDay));
+  const bonusSteps = Math.max(0, totalLogged - 5403000);
 
   if (statsRow) {
     statsRow.innerHTML = `
@@ -1216,12 +1237,14 @@ function renderDailyChart() {
       <div class="daily-stat-box">
         <span class="daily-stat-label">Expedition Progress</span>
         <div class="daily-stat-value mono-num">Day ${currentDay} <span style="font-size: 0.95rem; font-weight: 500; color: var(--text-muted);">/ 31</span></div>
-        <span class="daily-stat-sub">${31 - currentDay} days remaining in October</span>
+        <span class="daily-stat-sub">${
+          isCompleted ? '🎉 All 31 October days completed!' : `${31 - currentDay} days remaining in October`
+        }</span>
       </div>
       <div class="daily-stat-box">
         <span class="daily-stat-label">Daily Team Average</span>
         <div class="daily-stat-value mono-num">${formatNum(dailyAverage)}</div>
-        <span class="daily-stat-sub">team steps / active day</span>
+        <span class="daily-stat-sub">team steps / day across October</span>
       </div>
       <div class="daily-stat-box">
         <span class="daily-stat-label">Single-Day Record</span>
@@ -1235,10 +1258,14 @@ function renderDailyChart() {
         }</span>
       </div>
       <div class="daily-stat-box">
-        <span class="daily-stat-label">Oct 31 Projected Total</span>
-        <div class="daily-stat-value mono-num" style="color: #1a73e8;">~${formatChartPill(projectedTotal)}</div>
+        <span class="daily-stat-label">${isCompleted ? 'Oct 31 Final Total' : 'Oct 31 Projected Total'}</span>
+        <div class="daily-stat-value mono-num" style="color: #1a73e8;">${
+          isCompleted ? formatChartPill(totalLogged) : `~${formatChartPill(projectedTotal)}`
+        }</div>
         <span class="daily-stat-sub">${
-          totalLogged >= 5403000 ? '🏆 5.40M Goal Crushed! Stacking Bonus' : 'On track for Appalachian Trail!'
+          totalLogged >= 5403000
+            ? `🏆 5.40M Crushed! (+${formatChartPill(bonusSteps)} Bonus)`
+            : 'On track for Appalachian Trail!'
         }</span>
       </div>
     `;
@@ -1679,9 +1706,7 @@ function openAdminModal() {
   }
   const dateInput = document.getElementById('admin-date-input');
   if (dateInput) {
-    const now = new Date();
-    const isOct = now.getMonth() === 9 && now.getFullYear() === 2026;
-    const d = isOct ? Math.min(31, Math.max(1, now.getDate())) : 29;
+    const { currentDay: d } = getExpeditionDayInfo();
     dateInput.value = `2026-10-${String(d).padStart(2, '0')}`;
   }
   updateAdminPreviewTotal();
